@@ -11,7 +11,7 @@
 `docs/specs/capability-map.md`, `docs/research/sleep-onset-evidence.md`,
 `docs/planning/phases/open/PHASE-001-safe-breathing-foundation.md`
 **Development mode:** automatic
-**Last updated:** 2026-09-08
+**Last updated:** 2026-09-09
 
 ## Outcome
 
@@ -64,3 +64,8 @@ avoids mandatory holds, and supports a small set of user-selectable durations.
 - Requirements: `FR-001`, `FR-002`, `FR-004`, `FR-007`.
 - Protected behaviors: comfortable natural breathing and no mandatory holds.
 - Parent exit gate: `PHASE-001`.
+
+## Planned tickets
+
+- `TICKET-003` - Implementing the breathing protocol domain
+  (`docs/planning/tickets/open/TICKET-003-breathing-protocol-domain.md`)
