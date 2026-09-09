@@ -1,7 +1,7 @@
 # Feature 004 - Advancing through predictable breathing phases
 
 **Feature ID:** `FEAT-004`
-**Status:** confirmed
+**Status:** complete
 **Parent phase:** `PHASE-002`
 **Parent objective:** `OBJ-001`
 **Parent scope:** `SCOPE-001`
@@ -10,7 +10,7 @@
 **Source paths:** `docs/specs/project-scope.md`,
 `docs/specs/capability-map.md`,
 `docs/planning/phases/open/PHASE-002-guided-breathing-sessions.md`,
-`docs/planning/features/open/FEAT-002-comfortable-breathing-protocol.md`
+`docs/planning/features/closed/FEAT-002-comfortable-breathing-protocol.md`
 **Development mode:** automatic
 **Last updated:** 2026-09-08
 
@@ -63,4 +63,4 @@ completion, and interruption behavior are deterministic and observable.
 ## Planned tickets
 
 - `TICKET-005` - Creating the cancellable breathing session runner
-  (`docs/planning/tickets/open/TICKET-005-cancellable-session-runner.md`)
+  (`docs/planning/tickets/closed/TICKET-005-cancellable-session-runner.md`)

@@ -10,7 +10,7 @@
 **Owner:** Domain implementation
 **Source paths:** `vision.md`, `AGENTS.md`,
 `docs/specs/project-scope.md`, `docs/specs/capability-map.md`,
-`docs/planning/features/open/FEAT-004-predictable-breathing-phases.md`,
+`docs/planning/features/closed/FEAT-004-predictable-breathing-phases.md`,
 `docs/planning/tickets/closed/TICKET-003-breathing-protocol-domain.md`
 **Development mode:** automatic
 **Approval state:** bootstrap-authorized automatic child planning
