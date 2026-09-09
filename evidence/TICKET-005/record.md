@@ -5,8 +5,8 @@
 **Phase:** `PHASE-002` - Delivering reliable guided breathing sessions
 **Objective:** `OBJ-001`
 **Scope:** `SCOPE-001`
-**Status:** verifying
-**Readiness:** implementation complete; review pending
+**Status:** complete
+**Readiness:** committed; ticket lifecycle terminal
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
 
@@ -168,3 +168,24 @@
 
 - No blockers for implementation. Screen-off service policy and physical-device
   timing remain outside this ticket.
+
+## EVID-008 - Session runner commit
+
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-005`
+- **Source references:** `docs/planning/reviews/TICKET-005-review.md`,
+  `docs/planning/tickets/closed/TICKET-005-cancellable-session-runner.md`
+- **Commit:** `8c3f164ddfd6e825860a0960b415ecbb104b1e27`
+- **Subject:** `feat(core): add session runner`
+- **Source branch:** `ticket/android-build-foundation`
+- **Intended base:** repository default branch, not configured
+- **Committed paths:** pure session runner, unit tests, packaged
+  functionality tests, planning, review, and evidence artifacts
+- **Readiness references:** `EVID-001` through `EVID-007`,
+  `docs/planning/reviews/TICKET-005-review.md`
+- **Accepted warnings:** optional churn analysis is unavailable.
+- **Upstream:** no remote or upstream branch is configured
+- **Next action:** implement phase-to-cue mapping under `FEAT-005`
+- **Status:** passed

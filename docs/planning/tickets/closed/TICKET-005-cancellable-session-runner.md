@@ -1,7 +1,7 @@
 # Ticket 005 - Creating the cancellable breathing session runner
 
 **Ticket ID:** `TICKET-005`
-**Status:** inProgress
+**Status:** complete
 **Parent feature:** `FEAT-004`
 **Parent phase:** `PHASE-002`
 **Parent objective:** `OBJ-001`
