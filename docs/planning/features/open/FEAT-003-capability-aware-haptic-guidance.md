@@ -64,3 +64,8 @@ hardware without pretending that cues were delivered.
 - Requirements: `FR-002`, `FR-003`, `FR-005`.
 - Protected behaviors: gentle cues and honest unsupported-device behavior.
 - Parent exit gate: `PHASE-001`.
+
+## Planned tickets
+
+- `TICKET-004` - Creating the capability-aware haptic adapter
+  (`docs/planning/tickets/open/TICKET-004-capability-aware-haptic-adapter.md`)

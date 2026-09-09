@@ -10,6 +10,7 @@
 | 1 | `TICKET-001` | `FEAT-001` | `PHASE-001` | Creating the Android build foundation | complete | `docs/planning/tickets/closed/TICKET-001-android-build-foundation.md` |
 | 2 | `TICKET-002` | `FEAT-001` | `PHASE-001` | Presenting the offline wellness setup boundary | complete | `docs/planning/tickets/closed/TICKET-002-offline-wellness-setup.md` |
 | 3 | `TICKET-003` | `FEAT-002` | `PHASE-001` | Implementing the breathing protocol domain | complete | `docs/planning/tickets/closed/TICKET-003-breathing-protocol-domain.md` |
+| 4 | `TICKET-004` | `FEAT-003` | `PHASE-001` | Creating the capability-aware haptic adapter | verifying | `docs/planning/tickets/open/TICKET-004-capability-aware-haptic-adapter.md` |
 
 The backlog is ordered by dependency. `TICKET-001` establishes the clean
 Android boundary required by the setup, domain, haptic, service, and
