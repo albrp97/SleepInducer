@@ -9,7 +9,7 @@ baseline
 **Development mode:** automatic
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
-**Readiness:** implementation evidence terminal; review pending
+**Readiness:** committed; ticket lifecycle terminal
 
 ## Acceptance coverage
 
@@ -227,3 +227,29 @@ baseline
 
 - None for starting implementation after configuring commands to use the
   available session toolchain.
+
+### EVID-008 - Foundation commit
+
+- **Phase:** `PHASE-001`
+- **Feature:** `FEAT-001`
+- **Ticket:** `TICKET-001`
+- **Requirement/flow:** reviewed Android build foundation delivery
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-001`
+- **Source references:** `docs/planning/reviews/TICKET-001-review.md`,
+  `docs/planning/tickets/closed/TICKET-001-android-build-foundation.md`
+- **Commit:** `8480d9b18caa705252a996e4d132fb779ac29bdb`
+- **Subject:** `feat(android): add build foundation`
+- **Source branch:** `ticket/android-build-foundation`
+- **Intended base:** repository default branch, not configured
+- **Committed paths:** all staged project-context, Android foundation,
+  planning, evidence, and workflow files in the scoped root commit
+- **Readiness references:** `EVID-002` through `EVID-007`,
+  `docs/planning/reviews/TICKET-001-review.md`
+- **Accepted warnings:** empty unit source set and unavailable optional churn
+  analyzer remain documented concerns; neither blocks this foundation commit.
+- **Upstream:** no remote or upstream branch is configured
+- **Next action:** implement `TICKET-002` under the automatic delivery loop
+- **Status:** passed
