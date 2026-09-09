@@ -59,3 +59,8 @@ completion, and interruption behavior are deterministic and observable.
 - Requirements: `FR-001`, `FR-002`, `FR-003`, `FR-004`, `FR-006`.
 - Protected behaviors: predictable timing and no future work after stop.
 - Parent exit gate: `PHASE-002`.
+
+## Planned tickets
+
+- `TICKET-005` - Creating the cancellable breathing session runner
+  (`docs/planning/tickets/open/TICKET-005-cancellable-session-runner.md`)
