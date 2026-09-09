@@ -1,7 +1,7 @@
 # Ticket 004 - Creating the capability-aware haptic adapter
 
 **Ticket ID:** `TICKET-004`
-**Status:** verifying
+**Status:** complete
 **Parent feature:** `FEAT-003`
 **Parent phase:** `PHASE-001`
 **Parent objective:** `OBJ-001`

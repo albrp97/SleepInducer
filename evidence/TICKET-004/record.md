@@ -5,8 +5,8 @@
 **Phase:** `PHASE-001` - Establishing the safe breathing foundation
 **Objective:** `OBJ-001`
 **Scope:** `SCOPE-001`
-**Status:** verifying
-**Readiness:** implementation complete; review pending
+**Status:** complete
+**Readiness:** committed; ticket lifecycle terminal
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
 
@@ -177,3 +177,25 @@
 
 - Physical-device comfort and screen-off haptic validation remain deferred to
   `FEAT-010`, after session controls and foreground-service behavior exist.
+
+## EVID-008 - Haptic adapter commit
+
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-004`
+- **Source references:** `docs/planning/reviews/TICKET-004-review.md`,
+  `docs/planning/tickets/closed/TICKET-004-capability-aware-haptic-adapter.md`
+- **Commit:** `fcb3260c74e978961399883536d9e8bba96d6041`
+- **Subject:** `feat(android): add haptic adapter`
+- **Source branch:** `ticket/android-build-foundation`
+- **Intended base:** repository default branch, not configured
+- **Committed paths:** manifest permission, haptic adapter, unit tests,
+  packaged functionality tests, planning, review, and evidence artifacts
+- **Readiness references:** `EVID-001` through `EVID-007`,
+  `docs/planning/reviews/TICKET-004-review.md`
+- **Accepted warnings:** optional churn analysis is unavailable; physical
+  device comfort and screen-off validation remain deferred to `FEAT-010`.
+- **Upstream:** no remote or upstream branch is configured
+- **Next action:** implement the next approved session behavior ticket
+- **Status:** passed
