@@ -7,7 +7,7 @@
 
 | ID | Phase | Title | Status | Path | Capabilities |
 |---|---|---|---|---|---|
-| `FEAT-001` | `PHASE-001` | Establishing the buildable offline foundation | confirmed | `docs/planning/features/open/FEAT-001-buildable-offline-foundation.md` | `CAP-005`, `CAP-006` |
+| `FEAT-001` | `PHASE-001` | Establishing the buildable offline foundation | complete | `docs/planning/features/closed/FEAT-001-buildable-offline-foundation.md` | `CAP-005`, `CAP-006` |
 | `FEAT-002` | `PHASE-001` | Defining the comfortable breathing protocol | confirmed | `docs/planning/features/open/FEAT-002-comfortable-breathing-protocol.md` | `CAP-001`, `CAP-006` |
 | `FEAT-003` | `PHASE-001` | Making haptic guidance capability-aware | confirmed | `docs/planning/features/open/FEAT-003-capability-aware-haptic-guidance.md` | `CAP-003`, `CAP-005` |
 | `FEAT-004` | `PHASE-002` | Advancing through predictable breathing phases | confirmed | `docs/planning/features/open/FEAT-004-predictable-breathing-phases.md` | `CAP-001`, `CAP-004` |

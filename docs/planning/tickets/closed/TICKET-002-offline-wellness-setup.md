@@ -1,7 +1,7 @@
 # Ticket 002 - Presenting the offline wellness setup boundary
 
 **Ticket ID:** `TICKET-002`
-**Status:** inProgress
+**Status:** complete
 **Parent feature:** `FEAT-001`
 **Parent phase:** `PHASE-001`
 **Parent objective:** `OBJ-001`
@@ -10,7 +10,7 @@
 **Owner:** Android UI implementation
 **Source paths:** `vision.md`, `docs/specs/project-scope.md`,
 `docs/specs/capability-map.md`,
-`docs/planning/features/open/FEAT-001-buildable-offline-foundation.md`,
+`docs/planning/features/closed/FEAT-001-buildable-offline-foundation.md`,
 `docs/planning/tickets/closed/TICKET-001-android-build-foundation.md`
 **Last updated:** 2026-09-09
 

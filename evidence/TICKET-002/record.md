@@ -9,7 +9,7 @@
 **Development mode:** automatic
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
-**Readiness:** implementation evidence terminal; review pending
+**Readiness:** committed; ticket lifecycle terminal
 
 ## Acceptance coverage
 
@@ -271,3 +271,30 @@
 
 - No ticket blockers. Optional churn analysis remains a review-depth coverage
   gap because the local `aidd` package is unavailable.
+
+### EVID-010 - Setup boundary commit
+
+- **Phase:** `PHASE-001`
+- **Feature:** `FEAT-001`
+- **Ticket:** `TICKET-002`
+- **Requirement/flow:** reviewed offline wellness setup delivery
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-002`
+- **Source references:** `docs/planning/reviews/TICKET-002-review.md`,
+  `docs/planning/tickets/closed/TICKET-002-offline-wellness-setup.md`
+- **Commit:** `33efde55897a8f240f742ce2d6a7ffda4980ece0`
+- **Subject:** `feat(android): add setup boundary`
+- **Source branch:** `ticket/android-build-foundation`
+- **Intended base:** repository default branch, not configured
+- **Committed paths:** reviewed setup UI, resource copy, instrumentation tests,
+  planning updates, evidence, review, and before/after screenshots
+- **Readiness references:** `EVID-005` through `EVID-009`,
+  `docs/planning/reviews/TICKET-002-review.md`
+- **Accepted warnings:** empty unit source set and unavailable optional churn
+  analyzer remain documented concerns; neither blocks this UI ticket commit.
+- **Upstream:** no remote or upstream branch is configured
+- **Next action:** create or select the breathing-protocol feature ticket under
+  the automatic delivery loop
+- **Status:** passed

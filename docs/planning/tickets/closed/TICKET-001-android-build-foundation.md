@@ -10,7 +10,7 @@
 **Owner:** Android implementation
 **Source paths:** `AGENTS.md`, `README.md`,
 `docs/specs/project-scope.md`,
-`docs/planning/features/open/FEAT-001-buildable-offline-foundation.md`
+`docs/planning/features/closed/FEAT-001-buildable-offline-foundation.md`
 **Last updated:** 2026-09-09
 
 ## Outcome
