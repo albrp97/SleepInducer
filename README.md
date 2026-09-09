@@ -5,9 +5,9 @@ use before sleep. It will guide a comfortable slow breathing rhythm with gentle
 haptic cues so a user can start a session, turn the display off, and follow
 the timing without audio or continuous visual attention.
 
-> This project is an early Android implementation. The first screen and
-> build/test foundation are present; breathing sessions and screen-off haptics
-> are still under development.
+> This project is an early Android implementation. The first screen now
+> explains the wellness boundary, stop guidance, and offline behavior.
+> Breathing sessions and screen-off haptics are still under development.
 
 ## Intended first release
 

@@ -1,7 +1,7 @@
 # Ticket 002 - Presenting the offline wellness setup boundary
 
 **Ticket ID:** `TICKET-002`
-**Status:** pending
+**Status:** inProgress
 **Parent feature:** `FEAT-001`
 **Parent phase:** `PHASE-001`
 **Parent objective:** `OBJ-001`
@@ -11,8 +11,8 @@
 **Source paths:** `vision.md`, `docs/specs/project-scope.md`,
 `docs/specs/capability-map.md`,
 `docs/planning/features/open/FEAT-001-buildable-offline-foundation.md`,
-`docs/planning/tickets/open/TICKET-001-android-build-foundation.md`
-**Last updated:** 2026-09-08
+`docs/planning/tickets/closed/TICKET-001-android-build-foundation.md`
+**Last updated:** 2026-09-09
 
 ## Outcome
 
@@ -72,8 +72,9 @@ session can be started.
 
 - **Protected baseline:** foundational scope already limits the app to
   breathing-only, offline, minimal local state.
-- **Commands:** `./gradlew connectedDebugAndroidTest --tests
-  com.sleepinducer.app.SetupFlowTest`.
+- **Commands:** `./gradlew connectedDebugAndroidTest --offline`; the Android
+  connected-test task runs the complete instrumentation suite because it does
+  not support Gradle's `--tests` option.
 - **Evidence path:** `evidence/TICKET-002/`.
 - **Classification:** `automaticValidation` only, using the configured
   `rubber-duck` / `gpt-5.6-luna` / high / `all-validation` profile.
