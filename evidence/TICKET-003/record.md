@@ -9,7 +9,7 @@
 **Development mode:** automatic
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
-**Readiness:** baseline established; implementation pending
+**Readiness:** committed; ticket lifecycle terminal
 
 ## Acceptance coverage
 
@@ -249,3 +249,29 @@
 
 - None for implementation. Foreground-service and haptic hardware work remain
   outside this ticket.
+
+### EVID-008 - Protocol domain commit
+
+- **Phase:** `PHASE-001`
+- **Feature:** `FEAT-002`
+- **Ticket:** `TICKET-003`
+- **Requirement/flow:** reviewed breathing protocol domain delivery
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-003`
+- **Source references:** `docs/planning/reviews/TICKET-003-review.md`,
+  `docs/planning/tickets/closed/TICKET-003-breathing-protocol-domain.md`
+- **Commit:** `750f12748bcf0ce867a267e3cb79e6f080c60bfb`
+- **Subject:** `feat(core): add breathing protocol`
+- **Source branch:** `ticket/android-build-foundation`
+- **Intended base:** repository default branch, not configured
+- **Committed paths:** pure protocol domain, unit tests, application-boundary
+  tests, planning, evidence, static analysis, and review artifacts
+- **Readiness references:** `EVID-003` through `EVID-007`,
+  `docs/planning/reviews/TICKET-003-review.md`
+- **Accepted warnings:** optional churn analysis remains unavailable; this does
+  not block the domain commit.
+- **Upstream:** no remote or upstream branch is configured
+- **Next action:** implement the capability-aware haptic adapter feature
+- **Status:** passed
