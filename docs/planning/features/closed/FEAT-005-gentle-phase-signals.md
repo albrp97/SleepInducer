@@ -1,7 +1,7 @@
 # Feature 005 - Signaling phase changes gently and reliably
 
 **Feature ID:** `FEAT-005`
-**Status:** confirmed
+**Status:** complete
 **Parent phase:** `PHASE-002`
 **Parent objective:** `OBJ-001`
 **Parent scope:** `SCOPE-001`
@@ -9,10 +9,10 @@
 **Owner:** Android platform implementation
 **Source paths:** `docs/specs/project-scope.md`,
 `docs/specs/capability-map.md`,
-`docs/planning/phases/open/PHASE-002-guided-breathing-sessions.md`,
+`docs/planning/phases/closed/PHASE-002-guided-breathing-sessions.md`,
 `docs/planning/features/open/FEAT-003-capability-aware-haptic-guidance.md`
 **Development mode:** automatic
-**Last updated:** 2026-09-08
+**Last updated:** 2026-09-10
 
 ## Outcome
 
@@ -63,3 +63,8 @@ stable meaning, capability detection, and reliable cancellation.
 - Requirements: `FR-002`, `FR-003`, `FR-004`, `FR-005`.
 - Protected behaviors: gentle cues and no stale vibration.
 - Parent exit gate: `PHASE-002`.
+
+## Planned tickets
+
+- `TICKET-006` - Creating the phase haptic coordinator
+  (`docs/planning/tickets/closed/TICKET-006-phase-haptic-coordinator.md`)

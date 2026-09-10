@@ -208,8 +208,7 @@
   `docs/planning/reviews/TICKET-006-review.md`
 - **Accepted warnings:** optional churn analysis is unavailable.
 - **Upstream:** no remote or upstream branch is configured
-- **Next action:** close `FEAT-005` and `PHASE-002`, then plan the
-  screen-off session boundary
+- **Next action:** plan the screen-off session boundary under `PHASE-003`
 - **Status:** passed
 
 ## Open blockers

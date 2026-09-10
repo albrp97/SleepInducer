@@ -10,9 +10,9 @@
 **Owner:** Android platform implementation
 **Source paths:** `vision.md`, `AGENTS.md`,
 `docs/specs/project-scope.md`, `docs/specs/capability-map.md`,
-`docs/planning/phases/open/PHASE-002-guided-breathing-sessions.md`,
+`docs/planning/phases/closed/PHASE-002-guided-breathing-sessions.md`,
 `docs/planning/features/open/FEAT-003-capability-aware-haptic-guidance.md`,
-`docs/planning/features/open/FEAT-004-predictable-breathing-phases.md`,
+`docs/planning/features/closed/FEAT-004-predictable-breathing-phases.md`,
 `docs/planning/features/closed/FEAT-005-gentle-phase-signals.md`,
 `docs/planning/tickets/closed/TICKET-004-capability-aware-haptic-adapter.md`,
 `docs/planning/tickets/closed/TICKET-005-cancellable-session-runner.md`

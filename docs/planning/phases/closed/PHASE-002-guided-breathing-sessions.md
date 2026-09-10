@@ -1,7 +1,7 @@
 # Phase 002 - Delivering reliable guided breathing sessions
 
 **Phase ID:** `PHASE-002`
-**Status:** confirmed
+**Status:** complete
 **Parent objective:** `OBJ-001`
 **Parent scope:** `SCOPE-001`
 **Capabilities:** `CAP-001`, `CAP-003`, `CAP-004`
@@ -10,7 +10,7 @@
 `docs/specs/capability-map.md`, `docs/research/sleep-onset-evidence.md`,
 `docs/planning/phases/open/PHASE-001-safe-breathing-foundation.md`
 **Development mode:** automatic
-**Last updated:** 2026-09-08
+**Last updated:** 2026-09-10
 
 ## Outcome
 
@@ -74,5 +74,12 @@ Deferred:
 
 ## Approval and status history
 
-This phase is confirmed through the automatic bootstrap handoff. It remains in
-the configured `open` directory until its behavior and evidence are terminal.
+This phase was confirmed through the automatic bootstrap handoff and is now
+complete because its planned features and ticket evidence are terminal.
+
+## Planned features
+
+- `FEAT-004` - Advancing through predictable breathing phases
+  (`docs/planning/features/closed/FEAT-004-predictable-breathing-phases.md`)
+- `FEAT-005` - Signaling phase changes gently and reliably
+  (`docs/planning/features/closed/FEAT-005-gentle-phase-signals.md`)
