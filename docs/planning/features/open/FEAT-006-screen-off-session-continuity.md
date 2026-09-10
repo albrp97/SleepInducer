@@ -69,4 +69,4 @@ state.
 ## Planned tickets
 
 - `TICKET-007` - Establishing the foreground session service
-  (`docs/planning/tickets/open/TICKET-007-foreground-session-service.md`)
+  (`docs/planning/tickets/closed/TICKET-007-foreground-session-service.md`)

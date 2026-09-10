@@ -10,7 +10,7 @@
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
 **Evidence path:** `evidence/TICKET-007/`
-**Readiness:** reviewed with accepted warnings; commit pending
+**Readiness:** committed and closed with accepted warnings
 
 ## Planning chain
 
@@ -337,3 +337,51 @@
 - **Status:** passedWithConcerns
 - **Artifacts:** `docs/planning/reviews/TICKET-007-review.md`,
   `evidence/static-analysis/TICKET-007.md`
+
+## EVID-012 - Implementation commit
+
+- **Category:** commit
+- **Owner:** agent
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-007`
+- **Source references:** `docs/planning/reviews/TICKET-007-review.md`,
+  `evidence/static-analysis/TICKET-007.md`
+- **Command:** `git commit -m "feat(android): add foreground service"`
+- **Automated:** false
+- **Expected:** one scoped commit contains only the reviewed TICKET-007
+  implementation, tests, planning, evidence, and documentation.
+- **Observed:** commit `074b4a68541e6674c009d31c5bed6d4d53239e8d` was created on
+  `ticket/android-build-foundation` with the required Copilot co-author
+  trailer. The commit contains 15 intended paths and no unrelated files.
+- **Status:** passed
+- **Artifacts:** commit `074b4a68541e6674c009d31c5bed6d4d53239e8d`
+
+## EVID-013 - Ticket lifecycle closeout
+
+- **Category:** gate
+- **Owner:** agent
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-007`
+- **Source references:** `docs/planning/tickets/closed/TICKET-007-foreground-session-service.md`,
+  `docs/planning/backlog.md`,
+  `docs/planning/features/open/FEAT-006-screen-off-session-continuity.md`
+- **Command:** move the unchanged-ID ticket record from `open` to `closed`,
+  set its terminal status to `complete`, and synchronize backlog and parent
+  feature links.
+- **Automated:** false
+- **Expected:** the same ticket record is closed without duplication or
+  deletion, and all planning paths agree.
+- **Observed:** `TICKET-007` is complete in
+  `docs/planning/tickets/closed/`, the backlog points to the closed path, and
+  `FEAT-006` points to the closed child. The external Google Play
+  `specialUse` approval gate remains explicitly open for later release work.
+- **Status:** passedWithConcerns
+- **Artifacts:** `docs/planning/tickets/closed/TICKET-007-foreground-session-service.md`,
+  `docs/planning/backlog.md`,
+  `docs/planning/features/open/FEAT-006-screen-off-session-continuity.md`
+- **Accepted warning:** local APK readiness does not represent Google Play
+  approval.

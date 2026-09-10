@@ -1,7 +1,7 @@
 # Ticket 007 - Establishing the foreground session service
 
 **Ticket ID:** `TICKET-007`
-**Status:** inProgress
+**Status:** complete
 **Parent feature:** `FEAT-006`
 **Parent phase:** `PHASE-003`
 **Parent objective:** `OBJ-001`
@@ -149,3 +149,11 @@ exist.
   behavior is added.
 - Review, static analysis, automatic validation, and lifecycle evidence are
   terminal.
+
+## Completion
+
+- **Implementation commit:** `074b4a68541e6674c009d31c5bed6d4d53239e8d`
+  (`feat(android): add foreground service`)
+- **Review:** `docs/planning/reviews/TICKET-007-review.md`
+- **Evidence:** `evidence/TICKET-007/record.md`
+- **Closed:** 2026-09-10
