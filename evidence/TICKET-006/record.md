@@ -10,7 +10,7 @@
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
 **Evidence path:** `evidence/TICKET-006/`
-**Readiness:** implementation verified; review pending
+**Readiness:** committed; ticket lifecycle terminal
 
 ## Planning chain
 
@@ -189,6 +189,28 @@
 - **Accepted warning:** optional churn coverage is unavailable.
 - **Artifacts:** `docs/planning/reviews/TICKET-006-review.md`,
   `evidence/static-analysis/TICKET-006.md`
+
+## EVID-007 - Phase haptic coordinator commit
+
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-006`
+- **Source references:** `docs/planning/reviews/TICKET-006-review.md`,
+  `docs/planning/tickets/closed/TICKET-006-phase-haptic-coordinator.md`
+- **Commit:** `a2eb13bb86384392ae64d456b47a728342caacd5`
+- **Subject:** `feat(haptics): coordinate phase cues`
+- **Source branch:** `ticket/android-build-foundation`
+- **Intended base:** repository default branch, not configured
+- **Committed paths:** phase haptic coordinator, unit tests, packaged
+  functionality tests, planning, review, and evidence artifacts
+- **Readiness references:** `EVID-001` through `EVID-006`,
+  `docs/planning/reviews/TICKET-006-review.md`
+- **Accepted warnings:** optional churn analysis is unavailable.
+- **Upstream:** no remote or upstream branch is configured
+- **Next action:** close `FEAT-005` and `PHASE-002`, then plan the
+  screen-off session boundary
+- **Status:** passed
 
 ## Open blockers
 
