@@ -118,7 +118,7 @@ medical treatment, or a replacement for clinical insomnia care.
 |---|---|
 | Keep breathing timing as a pure domain boundary | Phase transitions, duration handling, stop behavior, and completion can be tested without Android hardware or lifecycle state. |
 | Isolate haptic delivery behind an Android adapter | `Vibrator`/`VibratorManager`, amplitude support, and OEM behavior vary by API level and device. |
-| Use an Android foreground service for an active screen-off session | The session is user-visible work that must continue while the activity is no longer visible; the exact foreground-service type must be verified against the target Android policy. |
+| Use an Android foreground service for an active screen-off session | The session is user-visible work that must continue while the activity is no longer visible; the API 35 APK declares `specialUse` with an explicit subtype because the timed haptic session does not fit the roughly three-minute `shortService` limit. Google Play approval remains a release gate. |
 | Keep the first release local-only and offline | A breathing pacer does not need an account, network, cloud storage, or sensitive telemetry. |
 | Treat the six-breaths-per-minute rhythm as an evidence-informed default, not a medical prescription | The strongest direct breathing study is small, and the broader sleep evidence does not justify a universal clinical claim. |
 

@@ -65,3 +65,8 @@ state.
 - Requirements: `FR-002`, `FR-003`, `FR-004`, `FR-006`.
 - Protected behaviors: screen-off continuity and no success-shaped interruption.
 - Parent exit gate: `PHASE-003`.
+
+## Planned tickets
+
+- `TICKET-007` - Establishing the foreground session service
+  (`docs/planning/tickets/open/TICKET-007-foreground-session-service.md`)

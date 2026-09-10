@@ -163,7 +163,9 @@ These are handoff themes, not child records created by bootstrap:
 - Minimum supported Android API: 26 for the initial implementation.
 - Application ID: `com.sleepinducer.app`; display name: `Sleep Inducer`.
 - Exact haptic waveform and phase encoding after hardware testing.
-- Foreground-service type and Android distribution-policy treatment.
+- For the API 35 APK, use the documented `specialUse` foreground-service type
+  with an explicit timed-haptic subtype; Google Play approval remains an
+  unresolved release-policy gate.
 - Whether local session preferences are needed beyond transient service state.
 - Release signing, license, remote repository, and release-channel policy.
 

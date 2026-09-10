@@ -7,4 +7,7 @@
     <string name="setup_offline">Works offline. No account or network connection is needed.</string>
     <string name="setup_next_step_title">A calm starting point</string>
     <string name="setup_next_step_body">Session duration and start controls will appear here when the breathing guide is ready.</string>
+    <string name="service_notification_channel">Breathing session</string>
+    <string name="service_notification_title">Sleep Inducer session</string>
+    <string name="service_notification_active">Breathing session is active.</string>
 </resources>

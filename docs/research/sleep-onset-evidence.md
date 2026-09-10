@@ -244,6 +244,12 @@ for normal ten- or twenty-minute sessions because its documented timeout is
 about three minutes. A candidate type such as `specialUse` must be verified
 against the target API and Play policy rather than assumed.
 
+For the current API 35 APK, the implementation uses `specialUse` with the
+required `FOREGROUND_SERVICE_SPECIAL_USE` permission and an explicit
+`PROPERTY_SPECIAL_USE_FGS_SUBTYPE` explanation. This resolves the local
+manifest and runtime declaration for development, but does not represent
+Google Play approval for a future release.
+
 Sources:
 
 - `Vibrator`:
