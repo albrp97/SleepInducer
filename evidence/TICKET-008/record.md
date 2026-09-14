@@ -309,3 +309,31 @@
   executing. The earlier complete 35-test API 35 run remains the terminal
   packaged-functionality result for unchanged normal flows, while this
   attempted rerun is retained as an infrastructure warning.
+
+## EVID-010 - Implementation commit
+
+- **Category:** commit
+- **Owner:** agent
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-008`
+- **Source references:** `docs/planning/reviews/TICKET-008-review.md`,
+  `evidence/static-analysis/TICKET-008.md`
+- **Command:** `git commit -m "feat(android): add live session"`
+- **Automated:** false
+- **Expected:** one scoped conventional commit contains only the reviewed
+  live-session implementation, tests, planning, evidence, documentation, and
+  final screenshots.
+- **Observed:** commit
+  `f597bce98393671fc5c43ccf9e2f09a1397cb66e` was created on
+  `ticket/running-session-service` with parent `ed5255fbb32070f7277bfd2249dbefd6510f6fb1`,
+  the required Copilot co-author trailer, and 39 intended paths. The exact
+  committed path set is reproducible with
+  `git diff-tree --no-commit-id --name-only -r f597bce98393671fc5c43ccf9e2f09a1397cb66e`.
+  No upstream is configured.
+- **Status:** passed
+- **Artifacts:** commit
+  `f597bce98393671fc5c43ccf9e2f09a1397cb66e`
+- **Next action:** configure an approved remote/upstream and run the configured
+  push workflow; local release readiness remains blocked by `TICKET-011`.

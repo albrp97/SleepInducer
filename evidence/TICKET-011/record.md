@@ -165,3 +165,28 @@
 - **Status:** blocked
 - **Blocker:** emulator/system startup instability. This does not replace the
   prior complete 35-test API 35 pass, but it prevents a fresh terminal run.
+
+## EVID-006 - Implementation checkpoint commit
+
+- **Category:** commit
+- **Owner:** agent
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Source references:** `docs/planning/reviews/TICKET-008-review.md`,
+  `evidence/static-analysis/TICKET-008.md`
+- **Command:** `git commit -m "feat(android): add live session"`
+- **Automated:** false
+- **Expected:** the implementation checkpoint and its explicit release
+  blockers are recorded without claiming production readiness.
+- **Observed:** commit
+  `f597bce98393671fc5c43ccf9e2f09a1397cb66e` was created on
+  `ticket/running-session-service` with the required Copilot co-author trailer
+  and 39 intended paths. No upstream is configured.
+- **Status:** passedWithConcerns
+- **Artifacts:** commit
+  `f597bce98393671fc5c43ccf9e2f09a1397cb66e`
+- **Accepted warning:** physical-device screen-off/haptic comfort evidence,
+  release signing, provider/remote checks, and Google Play `specialUse`
+  approval remain blocked.

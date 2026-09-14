@@ -172,3 +172,28 @@
 - **Blocker:** emulator/system startup instability prevented test execution.
   The prior complete 35-test API 35 pass remains the terminal result for the
   unchanged normal control flow.
+
+## EVID-006 - Implementation commit
+
+- **Category:** commit
+- **Owner:** agent
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-009`
+- **Source references:** `docs/planning/reviews/TICKET-009-review.md`,
+  `evidence/static-analysis/TICKET-008.md`
+- **Command:** `git commit -m "feat(android): add live session"`
+- **Automated:** false
+- **Expected:** the reviewed Compose control integration and its linked
+  implementation, tests, planning, evidence, and documentation are captured
+  in one scoped local commit.
+- **Observed:** commit
+  `f597bce98393671fc5c43ccf9e2f09a1397cb66e` was created on
+  `ticket/running-session-service` with the required Copilot co-author trailer
+  and 39 intended paths. No upstream is configured.
+- **Status:** passed
+- **Artifacts:** commit
+  `f597bce98393671fc5c43ccf9e2f09a1397cb66e`
+- **Next action:** configure an approved remote/upstream and run the configured
+  push workflow.
