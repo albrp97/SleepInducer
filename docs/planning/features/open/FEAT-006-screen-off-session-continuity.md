@@ -70,3 +70,5 @@ state.
 
 - `TICKET-007` - Establishing the foreground session service
   (`docs/planning/tickets/closed/TICKET-007-foreground-session-service.md`)
+- `TICKET-008` - Running the breathing session in the foreground service
+  (`docs/planning/tickets/open/TICKET-008-running-session-service.md`)

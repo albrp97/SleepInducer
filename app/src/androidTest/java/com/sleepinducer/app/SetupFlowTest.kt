@@ -3,6 +3,7 @@ package com.sleepinducer.app
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
@@ -29,6 +30,7 @@ class SetupFlowTest {
             .onNodeWithText(
                 "Stop immediately if you feel dizziness, shortness of breath, pain, panic, or discomfort.",
             )
+            .performScrollTo()
             .assertIsDisplayed()
     }
 
@@ -36,6 +38,7 @@ class SetupFlowTest {
     fun opensWithoutAccountOrNetwork() {
         composeTestRule
             .onNodeWithText("Works offline. No account or network connection is needed.")
+            .performScrollTo()
             .assertIsDisplayed()
     }
 }

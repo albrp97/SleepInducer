@@ -116,6 +116,33 @@ class BreathingSessionRunnerTest {
         assertTrue(firstSchedule.cancelled)
     }
 
+    @Test
+    fun doesNotScheduleAfterStartCallbackInterruptsSession() {
+        val scheduler = FakeSessionScheduler()
+        val states = mutableListOf<SessionState>()
+        lateinit var runner: BreathingSessionRunner
+        runner = BreathingSessionRunner(
+            protocol = BreathingProtocol(SessionDuration.SHORT),
+            scheduler = scheduler,
+        ) { state ->
+            states += state
+            if (state is SessionState.Active) {
+                runner.interrupt()
+            }
+        }
+
+        runner.start()
+
+        assertEquals(
+            listOf(
+                SessionState.Active(BreathingPhase.INHALE, 0L),
+                SessionState.Interrupted,
+            ),
+            states,
+        )
+        assertTrue(scheduler.schedules.isEmpty())
+    }
+
     private class FakeSessionScheduler(
         private var currentTimeMillis: Long = 0L,
     ) : SessionScheduler {

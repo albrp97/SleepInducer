@@ -51,10 +51,9 @@ class PhaseHapticCoordinator(
     fun onSessionStateChanged(state: SessionState): HapticDelivery? =
         when (state) {
             SessionState.Ready -> {
-                adapter.cancel()
                 lastPhase = null
                 terminalCancellationIssued = false
-                null
+                adapter.cancel()
             }
 
             is SessionState.Active -> deliverForNewPhase(state.phase)
@@ -64,10 +63,11 @@ class PhaseHapticCoordinator(
             SessionState.Interrupted,
             -> {
                 if (!terminalCancellationIssued) {
-                    adapter.cancel()
                     terminalCancellationIssued = true
+                    adapter.cancel()
+                } else {
+                    null
                 }
-                null
             }
         }
 
@@ -79,7 +79,7 @@ class PhaseHapticCoordinator(
         lastPhase = phase
         val delivery = adapter.deliver(cueFor(phase))
         if (delivery != HapticDelivery.Delivered) {
-            adapter.cancel()
+            return adapter.cancel() ?: delivery
         }
         return delivery
     }

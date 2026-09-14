@@ -71,9 +71,45 @@ class HapticAdapterTest {
         assertTrue(gateway.activeCue == null)
     }
 
+    @Test
+    fun reportsSystemDeliveryFailuresWithoutThrowing() {
+        val gateway = RecordingVibratorGateway(
+            hasVibrator = true,
+            hasAmplitudeControl = true,
+            failure = HapticDeliveryFailure.SYSTEM_REJECTED,
+        )
+
+        assertEquals(
+            HapticDelivery.Failed(HapticDeliveryFailure.SYSTEM_REJECTED),
+            HapticAdapter(gateway).deliver(HapticCue.DefaultPhaseTransition),
+        )
+        assertTrue(gateway.emittedCues.isEmpty())
+    }
+
+    @Test
+    fun reportsCancellationFailuresWithoutThrowing() {
+        val gateway = RecordingVibratorGateway(
+            hasVibrator = true,
+            hasAmplitudeControl = true,
+            cancellationFailure = HapticDeliveryFailure.SECURITY_RESTRICTION,
+        )
+        val adapter = HapticAdapter(gateway)
+
+        assertEquals(
+            HapticDelivery.Delivered,
+            adapter.deliver(HapticCue.DefaultPhaseTransition),
+        )
+        assertEquals(
+            HapticDelivery.Failed(HapticDeliveryFailure.SECURITY_RESTRICTION),
+            adapter.cancel(),
+        )
+    }
+
     private class RecordingVibratorGateway(
         override val hasVibrator: Boolean,
         override val hasAmplitudeControl: Boolean,
+        private val failure: HapticDeliveryFailure? = null,
+        private val cancellationFailure: HapticDeliveryFailure? = null,
     ) : VibratorGateway {
         val emittedCues = mutableListOf<HapticCue>()
         var cancellationCount = 0
@@ -82,12 +118,28 @@ class HapticAdapterTest {
             private set
 
         override fun vibrate(cue: HapticCue) {
+            if (failure != null) {
+                throw when (failure) {
+                    HapticDeliveryFailure.SECURITY_RESTRICTION ->
+                        SecurityException("test")
+                    HapticDeliveryFailure.SYSTEM_REJECTED ->
+                        IllegalStateException("test")
+                }
+            }
             emittedCues += cue
             activeCue = cue
         }
 
         override fun cancel() {
             cancellationCount += 1
+            if (cancellationFailure != null) {
+                throw when (cancellationFailure) {
+                    HapticDeliveryFailure.SECURITY_RESTRICTION ->
+                        SecurityException("test")
+                    HapticDeliveryFailure.SYSTEM_REJECTED ->
+                        IllegalStateException("test")
+                }
+            }
             activeCue = null
         }
     }

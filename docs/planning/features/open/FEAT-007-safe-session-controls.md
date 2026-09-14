@@ -59,6 +59,11 @@ clear before the display is turned off.
 - Offline storage/log review.
 - Evidence path: `evidence/FEAT-007/`.
 
+## Planned tickets
+
+- `TICKET-009` - Providing safe session controls
+  (`docs/planning/tickets/open/TICKET-009-safe-session-controls.md`)
+
 ## Traceability
 
 - Requirements: `FR-001`, `FR-003`, `FR-004`, `FR-005`, `FR-007`, `FR-008`.

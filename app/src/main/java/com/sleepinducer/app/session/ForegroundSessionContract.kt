@@ -1,10 +1,40 @@
 package com.sleepinducer.app.session
 
+import com.sleepinducer.app.breathing.BreathingPhase
 import com.sleepinducer.app.breathing.SessionDuration
+import com.sleepinducer.app.haptics.HapticCapability
 
 data class SessionStartRequest(
     val duration: SessionDuration,
 )
+
+enum class SessionFailure {
+    INVALID_START,
+    HAPTICS_UNAVAILABLE,
+    FOREGROUND_START_FAILED,
+    CUE_DELIVERY_FAILED,
+    SERVICE_INTERRUPTED,
+}
+
+data class SessionSnapshot(
+    val lifecycle: ForegroundSessionState = ForegroundSessionState.IDLE,
+    val duration: SessionDuration? = null,
+    val phase: BreathingPhase? = null,
+    val elapsedMillis: Long = 0L,
+    val hapticCapability: HapticCapability? = null,
+    val failure: SessionFailure? = null,
+)
+
+data class StoredSessionState(
+    val lifecycle: ForegroundSessionState,
+    val duration: SessionDuration?,
+)
+
+interface SessionStateStore {
+    fun read(): StoredSessionState?
+
+    fun write(state: StoredSessionState)
+}
 
 object ForegroundSessionActions {
     const val ACTION_START = "com.sleepinducer.app.session.START"
@@ -61,6 +91,7 @@ enum class ForegroundSessionState {
     STOPPED,
     FAILED,
     INTERRUPTED,
+    COMPLETED,
 }
 
 class ForegroundSessionStateMachine {
@@ -81,6 +112,11 @@ class ForegroundSessionStateMachine {
         activeDuration = duration
     }
 
+    fun complete() {
+        state = ForegroundSessionState.COMPLETED
+        activeDuration = null
+    }
+
     fun fail() {
         state = ForegroundSessionState.FAILED
         activeDuration = null
@@ -95,6 +131,18 @@ class ForegroundSessionStateMachine {
         if (state == ForegroundSessionState.ACTIVE) {
             state = ForegroundSessionState.INTERRUPTED
             activeDuration = null
+        }
+    }
+
+    fun restore(
+        restoredState: ForegroundSessionState,
+        duration: SessionDuration?,
+    ) {
+        state = restoredState
+        activeDuration = if (restoredState == ForegroundSessionState.ACTIVE) {
+            duration
+        } else {
+            null
         }
     }
 }

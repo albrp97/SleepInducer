@@ -59,6 +59,11 @@ delivery operations.
 - Review, static-analysis, and delivery-gate records.
 - Evidence path: `evidence/FEAT-010/`.
 
+## Planned tickets
+
+- `TICKET-011` - Establishing device and release readiness
+  (`docs/planning/tickets/open/TICKET-011-device-release-readiness.md`)
+
 ## Traceability
 
 - Requirements: `FR-002`, `FR-003`, `FR-004`, `FR-005`, `FR-006`, `FR-007`.

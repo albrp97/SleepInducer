@@ -34,6 +34,9 @@ class BreathingSessionRunner(
         startedAtMillis = scheduler.nowMillis()
         session = session.advanceTo(0L)
         onStateChanged(session.state)
+        if (state.isTerminal) {
+            return
+        }
         nextBoundaryElapsedMillis = protocol.contract.phaseDurationMillis
         scheduleNextBoundary()
     }

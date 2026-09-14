@@ -58,6 +58,11 @@ application boundary.
 - `./gradlew connectedDebugAndroidTest`
 - Evidence path: `evidence/FEAT-008/`.
 
+## Planned tickets
+
+- `TICKET-010` - Proving the complete application flow
+  (`docs/planning/tickets/open/TICKET-010-complete-functionality-evidence.md`)
+
 ## Traceability
 
 - Requirements: all `FR-001` through `FR-008`.

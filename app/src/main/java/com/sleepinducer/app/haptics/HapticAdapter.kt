@@ -30,6 +30,11 @@ enum class HapticCueRejection {
     AMPLITUDE_OUT_OF_RANGE,
 }
 
+enum class HapticDeliveryFailure {
+    SECURITY_RESTRICTION,
+    SYSTEM_REJECTED,
+}
+
 sealed interface HapticCapability {
     data object Usable : HapticCapability
 
@@ -47,6 +52,10 @@ sealed interface HapticDelivery {
 
     data class Rejected(
         val reason: HapticCueRejection,
+    ) : HapticDelivery
+
+    data class Failed(
+        val reason: HapticDeliveryFailure,
     ) : HapticDelivery
 }
 
@@ -81,8 +90,7 @@ class HapticAdapter(
         when (val capability = capability()) {
             HapticCapability.Usable -> Unit
             is HapticCapability.Unavailable -> {
-                cancel()
-                return HapticDelivery.Unavailable(capability.reason)
+                return cancelFailure() ?: HapticDelivery.Unavailable(capability.reason)
             }
         }
 
@@ -91,16 +99,33 @@ class HapticAdapter(
             return HapticDelivery.Rejected(rejection)
         }
 
-        cancel()
-        gateway.vibrate(cue)
-        cueActive = true
-        return HapticDelivery.Delivered
+        cancelFailure()?.let { return it }
+        return try {
+            gateway.vibrate(cue)
+            cueActive = true
+            HapticDelivery.Delivered
+        } catch (_: SecurityException) {
+            HapticDelivery.Failed(HapticDeliveryFailure.SECURITY_RESTRICTION)
+        } catch (_: IllegalStateException) {
+            HapticDelivery.Failed(HapticDeliveryFailure.SYSTEM_REJECTED)
+        }
     }
 
-    fun cancel() {
-        if (cueActive) {
+    fun cancel(): HapticDelivery.Failed? = cancelFailure()
+
+    private fun cancelFailure(): HapticDelivery.Failed? {
+        if (!cueActive) {
+            return null
+        }
+
+        cueActive = false
+        return try {
             gateway.cancel()
-            cueActive = false
+            null
+        } catch (_: SecurityException) {
+            HapticDelivery.Failed(HapticDeliveryFailure.SECURITY_RESTRICTION)
+        } catch (_: IllegalStateException) {
+            HapticDelivery.Failed(HapticDeliveryFailure.SYSTEM_REJECTED)
         }
     }
 

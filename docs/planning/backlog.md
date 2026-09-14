@@ -14,6 +14,10 @@
 | 5 | `TICKET-005` | `FEAT-004` | `PHASE-002` | Creating the cancellable breathing session runner | complete | `docs/planning/tickets/closed/TICKET-005-cancellable-session-runner.md` |
 | 6 | `TICKET-006` | `FEAT-005` | `PHASE-002` | Creating the phase haptic coordinator | complete | `docs/planning/tickets/closed/TICKET-006-phase-haptic-coordinator.md` |
 | 7 | `TICKET-007` | `FEAT-006` | `PHASE-003` | Establishing the foreground session service | complete | `docs/planning/tickets/closed/TICKET-007-foreground-session-service.md` |
+| 8 | `TICKET-008` | `FEAT-006` | `PHASE-003` | Running the breathing session in the foreground service | pending | `docs/planning/tickets/open/TICKET-008-running-session-service.md` |
+| 9 | `TICKET-009` | `FEAT-007` | `PHASE-003` | Providing safe session controls | pending | `docs/planning/tickets/open/TICKET-009-safe-session-controls.md` |
+| 10 | `TICKET-010` | `FEAT-008` | `PHASE-004` | Proving the complete application flow | pending | `docs/planning/tickets/open/TICKET-010-complete-functionality-evidence.md` |
+| 11 | `TICKET-011` | `FEAT-010` | `PHASE-004` | Establishing device and release readiness | pending | `docs/planning/tickets/open/TICKET-011-device-release-readiness.md` |
 
 The backlog is ordered by dependency. `TICKET-001` establishes the clean
 Android boundary required by the setup, domain, haptic, service, and
