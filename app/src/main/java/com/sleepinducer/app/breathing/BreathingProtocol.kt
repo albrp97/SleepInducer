@@ -9,17 +9,116 @@ enum class BreathingDepth {
     NATURAL,
 }
 
-enum class SessionDuration(val totalMillis: Long) {
-    SHORT(5 * 60 * 1000L),
-    DEFAULT(10 * 60 * 1000L),
-    EXTENDED(20 * 60 * 1000L),
+sealed interface SessionDuration {
+    val name: String
+    val minutes: Int
+    val totalMillis: Long
+
+    data object SHORT : SessionDuration {
+        override val name: String = "SHORT"
+        override val minutes: Int = 5
+        override val totalMillis: Long = minutes * MILLIS_PER_MINUTE
+    }
+
+    data object DEFAULT : SessionDuration {
+        override val name: String = "DEFAULT"
+        override val minutes: Int = 10
+        override val totalMillis: Long = minutes * MILLIS_PER_MINUTE
+    }
+
+    data object EXTENDED : SessionDuration {
+        override val name: String = "EXTENDED"
+        override val minutes: Int = 20
+        override val totalMillis: Long = minutes * MILLIS_PER_MINUTE
+    }
+
+    data class Custom(
+        override val minutes: Int,
+    ) : SessionDuration {
+        init {
+            require(minutes in MIN_CUSTOM_MINUTES..MAX_CUSTOM_MINUTES) {
+                "Custom duration must be between $MIN_CUSTOM_MINUTES and " +
+                    "$MAX_CUSTOM_MINUTES minutes."
+            }
+        }
+
+        override val name: String
+            get() = "$CUSTOM_PREFIX$minutes"
+
+        override val totalMillis: Long
+            get() = minutes * MILLIS_PER_MINUTE
+    }
+
+    companion object {
+        const val MIN_CUSTOM_MINUTES = 1
+        const val MAX_CUSTOM_MINUTES = 20
+        const val CUSTOM_OPTION_NAME = "CUSTOM"
+
+        val entries: List<SessionDuration> = listOf(
+            SHORT,
+            DEFAULT,
+            EXTENDED,
+        )
+
+        fun customOrNull(minutes: Int): Custom? {
+            return if (minutes in MIN_CUSTOM_MINUTES..MAX_CUSTOM_MINUTES) {
+                Custom(minutes)
+            } else {
+                null
+            }
+        }
+
+        fun fromSerialized(serializedName: String): SessionDuration? {
+            entries.firstOrNull { it.name == serializedName }?.let {
+                return it
+            }
+
+            return serializedName
+                .takeIf { it.startsWith(CUSTOM_PREFIX) }
+                ?.removePrefix(CUSTOM_PREFIX)
+                ?.toIntOrNull()
+                ?.let(::customOrNull)
+        }
+    }
 }
 
+private const val MILLIS_PER_MINUTE = 60_000L
+private const val CUSTOM_PREFIX = "CUSTOM:"
+
 data class BreathingProtocolContract(
-    val phaseDurationMillis: Long = 5_000L,
+    val inhaleDurationMillis: Long = DEFAULT_PHASE_DURATION_MILLIS,
+    val exhaleDurationMillis: Long = DEFAULT_PHASE_DURATION_MILLIS,
     val requiredHoldDurationMillis: Long = 0L,
     val depthGuidance: BreathingDepth = BreathingDepth.NATURAL,
-)
+) {
+    init {
+        require(isSupportedPhaseDuration(inhaleDurationMillis)) {
+            "Inhale duration must be between 2 and 10 seconds in half-second steps."
+        }
+        require(isSupportedPhaseDuration(exhaleDurationMillis)) {
+            "Exhale duration must be between 2 and 10 seconds in half-second steps."
+        }
+    }
+
+    fun phaseDurationMillis(phase: BreathingPhase): Long =
+        when (phase) {
+            BreathingPhase.INHALE -> inhaleDurationMillis
+            BreathingPhase.EXHALE -> exhaleDurationMillis
+        }
+
+    companion object {
+        const val MIN_PHASE_DURATION_MILLIS = 2_000L
+        const val MAX_PHASE_DURATION_MILLIS = 10_000L
+        const val PHASE_DURATION_STEP_MILLIS = 500L
+        const val DEFAULT_PHASE_DURATION_MILLIS = 6_000L
+
+        fun isSupportedPhaseDuration(durationMillis: Long): Boolean {
+            return durationMillis in
+                MIN_PHASE_DURATION_MILLIS..MAX_PHASE_DURATION_MILLIS &&
+                durationMillis % PHASE_DURATION_STEP_MILLIS == 0L
+        }
+    }
+}
 
 sealed interface SessionState {
     data object Ready : SessionState
@@ -39,9 +138,6 @@ class BreathingProtocol(
     val contract: BreathingProtocolContract = BreathingProtocolContract(),
 ) {
     init {
-        require(contract.phaseDurationMillis > 0L) {
-            "Phase duration must be positive."
-        }
         require(contract.requiredHoldDurationMillis == 0L) {
             "Mandatory breath holds are not supported."
         }
@@ -59,8 +155,10 @@ class BreathingProtocol(
             return SessionState.Completed
         }
 
-        val cycleDurationMillis = contract.phaseDurationMillis * 2
-        val phase = if (elapsedMillis % cycleDurationMillis < contract.phaseDurationMillis) {
+        val cycleDurationMillis =
+            contract.inhaleDurationMillis + contract.exhaleDurationMillis
+        val cyclePositionMillis = elapsedMillis % cycleDurationMillis
+        val phase = if (cyclePositionMillis < contract.inhaleDurationMillis) {
             BreathingPhase.INHALE
         } else {
             BreathingPhase.EXHALE

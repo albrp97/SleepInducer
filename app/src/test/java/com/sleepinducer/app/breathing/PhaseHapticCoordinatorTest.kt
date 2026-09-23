@@ -35,7 +35,7 @@ class PhaseHapticCoordinatorTest {
 
         coordinator.onSessionStateChanged(active(BreathingPhase.INHALE))
         coordinator.onSessionStateChanged(active(BreathingPhase.INHALE, 100L))
-        coordinator.onSessionStateChanged(active(BreathingPhase.EXHALE, 5_000L))
+        coordinator.onSessionStateChanged(active(BreathingPhase.EXHALE, 6_000L))
         coordinator.onSessionStateChanged(active(BreathingPhase.EXHALE, 5_100L))
 
         assertEquals(2, gateway.emittedCues.size)
@@ -85,7 +85,7 @@ class PhaseHapticCoordinatorTest {
             coordinator.onSessionStateChanged(active(BreathingPhase.INHALE))
             coordinator.onSessionStateChanged(terminalState)
             coordinator.onSessionStateChanged(terminalState)
-            coordinator.onSessionStateChanged(active(BreathingPhase.EXHALE, 5_000L))
+            coordinator.onSessionStateChanged(active(BreathingPhase.EXHALE, 6_000L))
 
             assertEquals(1, gateway.cancellationCount)
             assertEquals(1, gateway.emittedCues.size)

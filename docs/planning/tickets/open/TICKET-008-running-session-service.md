@@ -14,7 +14,7 @@
 `docs/planning/tickets/closed/TICKET-007-foreground-session-service.md`
 **Development mode:** automatic
 **Approval state:** bootstrap-authorized automatic child planning
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-23
 
 ## Outcome
 
@@ -26,6 +26,8 @@ minimal local operational recovery.
 
 - Add an Android scheduler backed by the existing monotonic session contract.
 - Connect `BreathingSessionRunner` and `PhaseHapticCoordinator` to the service.
+- Carry the independently configured inhale and exhale phase durations into
+  the domain runner.
 - Expose immutable session snapshots to a bound activity through the local
   binder.
 - Surface haptic capability and delivery failures without success-shaped state.
@@ -35,6 +37,9 @@ minimal local operational recovery.
   destruction.
 - Persist only the active/terminal operational state needed to surface an
   interrupted session after process recreation.
+- Hold the CPU awake only while a live session is active so the phase scheduler
+  can continue after the display is locked, and release it on
+  every terminal path.
 - Add unit and packaged Android functionality coverage for live phase changes,
   completion through the session engine, interruption recovery, and cleanup.
 
@@ -76,14 +81,22 @@ minimal local operational recovery.
    - **Functionality test:** `ForegroundSessionServiceFlowTest#stopsFromNotificationAction`
      sends the explicit notification action through the installed service
      boundary and asserts terminal cleanup.
+5. **Locked-screen continuity:** Given an active session and a locked display,
+   the service keeps its CPU wake lock and continues phase timing until stop or
+   completion.
+   - **Functionality test:** `ForegroundSessionServiceFlowTest#continuesPhaseTimingWithTheDisplayOff`
+     observes the service-backed phase transition while the display is off and
+     asserts the wake lock is held.
 
 ## Protected behaviors
 
-- Five-second inhale and five-second exhale remain the only phases.
+- Six-second inhale and exhale are the defaults, with independently configured
+  whole- or half-second phase durations supported without mandatory holds.
 - No mandatory hold, forced depth, continuous vibration, or hidden restart is
   introduced.
 - Unsupported haptics, service failures, and interruptions remain explicit.
 - The service remains non-exported and non-sticky.
+- The CPU wake lock is never retained after a terminal session state.
 
 ## Verification and evidence
 

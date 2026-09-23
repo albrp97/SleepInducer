@@ -22,9 +22,13 @@ clear before the display is turned off.
 
 ## Included
 
-- Duration selection and visible start action.
+- Preset duration selection, a custom zero-to-twenty-minute slider, independent
+  two-to-ten-second inhale and exhale sliders in half-second steps, and a
+  visible start action that requires at least one minute.
 - Visible stop action and terminal-state rendering.
 - Safety guidance for comfort, positioning, and symptoms.
+- In-app explanation of the breathing technique, phase cues, and usage steps.
+- System light and dark theme support.
 - Missing-hardware and service-start failure messaging.
 - Minimal local operational state without accounts or network calls.
 

@@ -21,6 +21,7 @@ class BreathingSessionRunner(
     private var session = protocol.newSession()
     private var startedAtMillis: Long? = null
     private var nextBoundaryElapsedMillis: Long? = null
+    private var nextBoundaryPhase: BreathingPhase? = null
     private var scheduledBoundary: SessionSchedule? = null
 
     val state: SessionState
@@ -37,7 +38,8 @@ class BreathingSessionRunner(
         if (state.isTerminal) {
             return
         }
-        nextBoundaryElapsedMillis = protocol.contract.phaseDurationMillis
+        nextBoundaryElapsedMillis = protocol.contract.inhaleDurationMillis
+        nextBoundaryPhase = BreathingPhase.EXHALE
         scheduleNextBoundary()
     }
 
@@ -89,10 +91,16 @@ class BreathingSessionRunner(
             return
         }
 
-        val phaseDuration = protocol.contract.phaseDurationMillis
         var nextBoundaryElapsed = checkNotNull(nextBoundaryElapsedMillis)
         while (nextBoundaryElapsed <= elapsedMillis) {
-            nextBoundaryElapsed += phaseDuration
+            val boundaryPhase = checkNotNull(nextBoundaryPhase)
+            nextBoundaryElapsed += protocol.contract.phaseDurationMillis(
+                boundaryPhase,
+            )
+            nextBoundaryPhase = when (boundaryPhase) {
+                BreathingPhase.INHALE -> BreathingPhase.EXHALE
+                BreathingPhase.EXHALE -> BreathingPhase.INHALE
+            }
         }
         nextBoundaryElapsedMillis = nextBoundaryElapsed
         scheduleNextBoundary()

@@ -185,6 +185,12 @@ supported by the evidence and easy to stop:
 - **Cueing:** short phase-transition haptics, not continuous vibration.
 - **User control:** stop at any time and do not penalize early stopping.
 
+This evidence baseline describes a five-second inhale and five-second exhale
+as the simple 0.1 Hz reference protocol. The current product default is six
+seconds for each phase, which remains a slow-breathing wellness setting rather
+than an efficacy claim. Users can adjust inhale and exhale independently in
+half-second steps.
+
 An optional longer-exhale pattern, such as four seconds in and six seconds
 out, can be evaluated later as a separate product experiment. It should not be
 described as proven superior for sleep onset. Mandatory holds and rapid

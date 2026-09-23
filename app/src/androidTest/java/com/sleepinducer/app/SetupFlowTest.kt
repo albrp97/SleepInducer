@@ -41,4 +41,30 @@ class SetupFlowTest {
             .performScrollTo()
             .assertIsDisplayed()
     }
+
+    @Test
+    fun explainsTheTechniqueAndUsage() {
+        composeTestRule
+            .onNodeWithText("How it works")
+            .performScrollTo()
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(
+                "This app uses slow-paced breathing with a six-second inhale and a six-second exhale by default. Adjust each phase in whole or half seconds with the timing sliders. Hold time is zero seconds. Keep the breath natural and comfortable rather than forcing its depth.",
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(
+                "By default, breathe in gently for 6 seconds, breathe out gently for 6 seconds, then repeat. Use the timing sliders to choose each phase in whole or half seconds. There is no breath hold between phases.",
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(
+                "1. Choose a session length, then adjust inhale and exhale timing in whole or half seconds.",
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
+    }
 }

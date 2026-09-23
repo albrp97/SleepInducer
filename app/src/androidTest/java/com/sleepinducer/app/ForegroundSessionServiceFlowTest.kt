@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.os.SystemClock
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.sleepinducer.app.breathing.BreathingProtocolContract
 import com.sleepinducer.app.breathing.SessionDuration
 import com.sleepinducer.app.session.BreathingSessionService
 import com.sleepinducer.app.session.ForegroundSessionState
@@ -79,6 +80,18 @@ class ForegroundSessionServiceFlowTest {
     }
 
     @Test
+    fun declaresWakeLockPermissionForScreenOffTiming() {
+        @Suppress("DEPRECATION")
+        val permissions = appContext.packageManager
+            .getPackageInfo(appContext.packageName, PackageManager.GET_PERMISSIONS)
+            .requestedPermissions
+            .orEmpty()
+            .toSet()
+
+        assertTrue("android.permission.WAKE_LOCK" in permissions)
+    }
+
+    @Test
     fun startsForegroundServiceFromExplicitAction() {
         val binding = bindService()
 
@@ -94,6 +107,22 @@ class ForegroundSessionServiceFlowTest {
             android.app.NotificationManager.IMPORTANCE_LOW,
             channel?.importance,
         )
+    }
+
+    @Test
+    fun exposesConfiguredPhaseDurationsThroughTheService() {
+        val binding = bindService()
+        val contract = BreathingProtocolContract(
+            inhaleDurationMillis = 7_500L,
+            exhaleDurationMillis = 4_500L,
+        )
+
+        appContext.startForegroundService(
+            startIntent(SessionDuration.DEFAULT, contract),
+        )
+        awaitState(binding.service, ForegroundSessionState.ACTIVE)
+
+        assertEquals(contract, binding.service.snapshot.contract)
     }
 
     @Test
@@ -122,6 +151,7 @@ class ForegroundSessionServiceFlowTest {
                 it.phase ==
                 com.sleepinducer.app.breathing.BreathingPhase.INHALE
         }
+        assertTrue(binding.service.isSessionWakeLockHeld)
 
         toggleDisplay()
         try {
@@ -133,6 +163,23 @@ class ForegroundSessionServiceFlowTest {
         } finally {
             toggleDisplay()
         }
+    }
+
+    @Test
+    fun releasesWakeLockAfterStoppingSession() {
+        val binding = bindService()
+        appContext.startForegroundService(startIntent(SessionDuration.DEFAULT))
+        awaitState(binding.service, ForegroundSessionState.ACTIVE)
+        assertTrue(binding.service.isSessionWakeLockHeld)
+
+        appContext.startService(
+            Intent(appContext, BreathingSessionService::class.java).apply {
+                action = BreathingSessionService.ACTION_STOP
+            },
+        )
+        awaitState(binding.service, ForegroundSessionState.STOPPED)
+
+        assertFalse(binding.service.isSessionWakeLockHeld)
     }
 
     @Test
@@ -205,10 +252,21 @@ class ForegroundSessionServiceFlowTest {
         assertEquals(null, binding.service.activeDuration)
     }
 
-    private fun startIntent(duration: SessionDuration): Intent =
+    private fun startIntent(
+        duration: SessionDuration,
+        contract: BreathingProtocolContract = BreathingProtocolContract(),
+    ): Intent =
         Intent(appContext, BreathingSessionService::class.java).apply {
             action = BreathingSessionService.ACTION_START
             putExtra(BreathingSessionService.EXTRA_DURATION, duration.name)
+            putExtra(
+                BreathingSessionService.EXTRA_INHALE_DURATION_MILLIS,
+                contract.inhaleDurationMillis,
+            )
+            putExtra(
+                BreathingSessionService.EXTRA_EXHALE_DURATION_MILLIS,
+                contract.exhaleDurationMillis,
+            )
         }
 
     private fun bindService(): ServiceBinding {

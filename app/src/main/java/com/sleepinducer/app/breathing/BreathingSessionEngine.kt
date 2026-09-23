@@ -7,11 +7,12 @@ class BreathingSessionEngine(
     duration: SessionDuration,
     scheduler: SessionScheduler,
     adapter: HapticAdapter,
+    contract: BreathingProtocolContract = BreathingProtocolContract(),
     private val onStateChanged: (SessionState, HapticDelivery?) -> Unit,
 ) {
     private val coordinator = PhaseHapticCoordinator(adapter)
     private val runner = BreathingSessionRunner(
-        protocol = BreathingProtocol(duration),
+        protocol = BreathingProtocol(duration, contract),
         scheduler = scheduler,
     ) { state ->
         onStateChanged(

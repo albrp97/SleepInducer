@@ -26,7 +26,8 @@ class BreathingSessionEngineTest {
         }
 
         engine.start()
-        scheduler.runAt(5_000L)
+        scheduler.runAt(6_000L)
+
         scheduler.runAt(SessionDuration.SHORT.totalMillis)
 
         assertEquals(BreathingPhase.EXHALE, (states[1] as SessionState.Active).phase)

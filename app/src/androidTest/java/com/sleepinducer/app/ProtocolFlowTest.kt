@@ -28,8 +28,12 @@ class ProtocolFlowTest {
             session.advanceTo(0L).state,
         )
         assertEquals(
-            SessionState.Active(BreathingPhase.EXHALE, 5_000L),
-            session.advanceTo(5_000L).state,
+            SessionState.Active(BreathingPhase.INHALE, 5_999L),
+            session.advanceTo(5_999L).state,
+        )
+        assertEquals(
+            SessionState.Active(BreathingPhase.EXHALE, 6_000L),
+            session.advanceTo(6_000L).state,
         )
     }
 
@@ -65,6 +69,7 @@ class ProtocolFlowTest {
 
         assertEquals(0L, protocol.contract.requiredHoldDurationMillis)
         assertEquals(BreathingDepth.NATURAL, protocol.contract.depthGuidance)
-        assertEquals(5_000L, protocol.contract.phaseDurationMillis)
+        assertEquals(6_000L, protocol.contract.inhaleDurationMillis)
+        assertEquals(6_000L, protocol.contract.exhaleDurationMillis)
     }
 }

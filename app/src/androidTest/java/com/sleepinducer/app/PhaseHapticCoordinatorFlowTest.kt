@@ -40,7 +40,7 @@ class PhaseHapticCoordinatorFlowTest {
         assertEquals(
             HapticDelivery.Delivered,
             coordinator.onSessionStateChanged(
-                SessionState.Active(BreathingPhase.EXHALE, 5_000L),
+                SessionState.Active(BreathingPhase.EXHALE, 6_000L),
             ),
         )
 
@@ -57,7 +57,7 @@ class PhaseHapticCoordinatorFlowTest {
         listOf(
             SessionState.Active(BreathingPhase.INHALE, 0L),
             SessionState.Active(BreathingPhase.INHALE, 100L),
-            SessionState.Active(BreathingPhase.EXHALE, 5_000L),
+            SessionState.Active(BreathingPhase.EXHALE, 6_000L),
             SessionState.Active(BreathingPhase.EXHALE, 5_100L),
         ).forEach(coordinator::onSessionStateChanged)
 
@@ -92,7 +92,7 @@ class PhaseHapticCoordinatorFlowTest {
         )
 
         runner.start()
-        scheduler.advanceTo(5_000L)
+        scheduler.advanceTo(6_000L)
         assertEquals(1, gateway.cancellationCount)
         runner.stop()
         scheduler.runPending()

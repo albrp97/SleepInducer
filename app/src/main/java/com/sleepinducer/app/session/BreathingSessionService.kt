@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.PowerManager
 import android.os.SystemClock
 import com.sleepinducer.app.MainActivity
 import com.sleepinducer.app.R
@@ -28,11 +29,16 @@ class BreathingSessionService : Service() {
         const val ACTION_START = ForegroundSessionActions.ACTION_START
         const val ACTION_STOP = ForegroundSessionActions.ACTION_STOP
         const val EXTRA_DURATION = ForegroundSessionActions.EXTRA_DURATION
+        const val EXTRA_INHALE_DURATION_MILLIS =
+            ForegroundSessionActions.EXTRA_INHALE_DURATION_MILLIS
+        const val EXTRA_EXHALE_DURATION_MILLIS =
+            ForegroundSessionActions.EXTRA_EXHALE_DURATION_MILLIS
         const val NOTIFICATION_CHANNEL_ID = "breathing_session"
         private const val NOTIFICATION_ID = 1001
         private const val NOTIFICATION_STOP_REQUEST_CODE = 1002
         private const val NOTIFICATION_OPEN_REQUEST_CODE = 1003
         private const val PROGRESS_UPDATE_INTERVAL_MILLIS = 1_000L
+        private const val WAKE_LOCK_GRACE_MILLIS = 60_000L
     }
 
     private val stateMachine = ForegroundSessionStateMachine()
@@ -45,6 +51,7 @@ class BreathingSessionService : Service() {
     private var scheduler: AndroidSessionScheduler? = null
     private var engine: BreathingSessionEngine? = null
     private var sessionStartedAtMillis: Long? = null
+    private var sessionWakeLock: PowerManager.WakeLock? = null
     private var progressTicker: Runnable? = null
     private var failureInProgress = false
 
@@ -63,6 +70,9 @@ class BreathingSessionService : Service() {
 
     val activeDuration
         get() = stateMachine.activeDuration
+
+    val isSessionWakeLockHeld: Boolean
+        get() = sessionWakeLock?.isHeld == true
 
     override fun onCreate() {
         super.onCreate()
@@ -148,6 +158,12 @@ class BreathingSessionService : Service() {
             val result = ForegroundSessionCommandParser.parse(
                 action = intent.action,
                 durationName = intent.getStringExtra(EXTRA_DURATION),
+                inhaleDurationMillis = intent
+                    .takeIf { it.hasExtra(EXTRA_INHALE_DURATION_MILLIS) }
+                    ?.getLongExtra(EXTRA_INHALE_DURATION_MILLIS, 0L),
+                exhaleDurationMillis = intent
+                    .takeIf { it.hasExtra(EXTRA_EXHALE_DURATION_MILLIS) }
+                    ?.getLongExtra(EXTRA_EXHALE_DURATION_MILLIS, 0L),
             )
         ) {
             is SessionStartResult.Accepted -> activateSession(result.request)
@@ -160,6 +176,7 @@ class BreathingSessionService : Service() {
         publish(
             currentSnapshot.copy(
                 duration = request.duration,
+                contract = request.contract,
                 phase = null,
                 elapsedMillis = 0L,
                 hapticCapability = capability,
@@ -178,6 +195,24 @@ class BreathingSessionService : Service() {
         try {
             createNotificationChannel()
             startForegroundCompat()
+            try {
+                acquireSessionWakeLock(
+                    timeoutMillis = request.duration.totalMillis +
+                        WAKE_LOCK_GRACE_MILLIS,
+                )
+            } catch (_: SecurityException) {
+                failSession(
+                    failure = SessionFailure.SCREEN_OFF_CONTINUITY_FAILED,
+                    duration = request.duration,
+                )
+                return
+            } catch (_: IllegalStateException) {
+                failSession(
+                    failure = SessionFailure.SCREEN_OFF_CONTINUITY_FAILED,
+                    duration = request.duration,
+                )
+                return
+            }
             stateMachine.activate(request.duration)
             sessionStartedAtMillis = SystemClock.elapsedRealtime()
             stateStore.write(
@@ -192,6 +227,7 @@ class BreathingSessionService : Service() {
                 duration = request.duration,
                 scheduler = newScheduler,
                 adapter = hapticAdapter,
+                contract = request.contract,
                 onStateChanged = ::onEngineStateChanged,
             )
             scheduler = newScheduler
@@ -413,6 +449,34 @@ class BreathingSessionService : Service() {
         scheduler?.close()
         scheduler = null
         engine = null
+        releaseSessionWakeLock()
+    }
+
+    private fun acquireSessionWakeLock(timeoutMillis: Long) {
+        if (sessionWakeLock?.isHeld == true) {
+            return
+        }
+
+        val powerManager = checkNotNull(
+            getSystemService(PowerManager::class.java),
+        ) {
+            "Power management is unavailable for screen-off timing."
+        }
+        val wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "$packageName:breathing-session",
+        )
+        wakeLock.setReferenceCounted(false)
+        sessionWakeLock = wakeLock
+        wakeLock.acquire(timeoutMillis)
+    }
+
+    private fun releaseSessionWakeLock() {
+        val wakeLock = sessionWakeLock ?: return
+        sessionWakeLock = null
+        if (wakeLock.isHeld) {
+            wakeLock.release()
+        }
     }
 
     private fun startProgressTicker() {

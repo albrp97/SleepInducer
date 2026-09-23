@@ -52,10 +52,10 @@ medical treatment, or a replacement for clinical insomnia care.
 - The primary target is adults seeking a general wellness aid. Children and
   clinical populations are not the evidence or safety target for the first
   release.
-- The initial protocol is six breaths per minute with approximately five
-  seconds inhaling and five seconds exhaling, without a mandatory hold. The
-  duration and haptic pattern are product settings that must remain
-  comfortable and interruptible.
+- The initial protocol uses six-second inhale and exhale defaults without a
+  mandatory hold. Each phase can be adjusted independently from two to ten
+  seconds in half-second steps. The timing and haptic pattern are product
+  settings that must remain comfortable and interruptible.
 - The app must avoid claims that a breathing session reliably shortens sleep
   onset. Current evidence supports feasibility and a plausible relaxation
   mechanism, but the direct sleep evidence is small, heterogeneous, and

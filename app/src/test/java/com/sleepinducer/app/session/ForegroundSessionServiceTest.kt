@@ -1,6 +1,7 @@
 package com.sleepinducer.app.session
 
 import com.sleepinducer.app.breathing.SessionDuration
+import com.sleepinducer.app.breathing.BreathingProtocolContract
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -45,6 +46,57 @@ class ForegroundSessionServiceTest {
             ForegroundSessionCommandParser.parse(
                 action = BreathingSessionService.ACTION_START,
                 durationName = "UNKNOWN",
+            ),
+        )
+    }
+
+    @Test
+    fun acceptsSerializedCustomDuration() {
+        val customDuration = SessionDuration.Custom(15)
+
+        assertEquals(
+            SessionStartResult.Accepted(SessionStartRequest(customDuration)),
+            ForegroundSessionCommandParser.parse(
+                action = BreathingSessionService.ACTION_START,
+                durationName = customDuration.name,
+            ),
+        )
+    }
+
+    @Test
+    fun acceptsConfiguredPhaseDurations() {
+        val result = ForegroundSessionCommandParser.parse(
+            action = BreathingSessionService.ACTION_START,
+            durationName = SessionDuration.DEFAULT.name,
+            inhaleDurationMillis = 7_500L,
+            exhaleDurationMillis = 4_500L,
+        )
+
+        assertEquals(
+            SessionStartResult.Accepted(
+                SessionStartRequest(
+                    duration = SessionDuration.DEFAULT,
+                    contract = BreathingProtocolContract(
+                        inhaleDurationMillis = 7_500L,
+                        exhaleDurationMillis = 4_500L,
+                    ),
+                ),
+            ),
+            result,
+        )
+    }
+
+    @Test
+    fun rejectsUnsupportedPhaseDurations() {
+        assertEquals(
+            SessionStartResult.Rejected(
+                SessionStartRejection.UNSUPPORTED_TIMING,
+            ),
+            ForegroundSessionCommandParser.parse(
+                action = BreathingSessionService.ACTION_START,
+                durationName = SessionDuration.DEFAULT.name,
+                inhaleDurationMillis = 7_250L,
+                exhaleDurationMillis = 4_500L,
             ),
         )
     }

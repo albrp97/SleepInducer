@@ -1,17 +1,20 @@
 package com.sleepinducer.app.session
 
 import com.sleepinducer.app.breathing.BreathingPhase
+import com.sleepinducer.app.breathing.BreathingProtocolContract
 import com.sleepinducer.app.breathing.SessionDuration
 import com.sleepinducer.app.haptics.HapticCapability
 
 data class SessionStartRequest(
     val duration: SessionDuration,
+    val contract: BreathingProtocolContract = BreathingProtocolContract(),
 )
 
 enum class SessionFailure {
     INVALID_START,
     HAPTICS_UNAVAILABLE,
     FOREGROUND_START_FAILED,
+    SCREEN_OFF_CONTINUITY_FAILED,
     CUE_DELIVERY_FAILED,
     SERVICE_INTERRUPTED,
 }
@@ -19,6 +22,7 @@ enum class SessionFailure {
 data class SessionSnapshot(
     val lifecycle: ForegroundSessionState = ForegroundSessionState.IDLE,
     val duration: SessionDuration? = null,
+    val contract: BreathingProtocolContract = BreathingProtocolContract(),
     val phase: BreathingPhase? = null,
     val elapsedMillis: Long = 0L,
     val hapticCapability: HapticCapability? = null,
@@ -40,12 +44,17 @@ object ForegroundSessionActions {
     const val ACTION_START = "com.sleepinducer.app.session.START"
     const val ACTION_STOP = "com.sleepinducer.app.session.STOP"
     const val EXTRA_DURATION = "com.sleepinducer.app.session.DURATION"
+    const val EXTRA_INHALE_DURATION_MILLIS =
+        "com.sleepinducer.app.session.INHALE_DURATION_MILLIS"
+    const val EXTRA_EXHALE_DURATION_MILLIS =
+        "com.sleepinducer.app.session.EXHALE_DURATION_MILLIS"
 }
 
 enum class SessionStartRejection {
     UNSUPPORTED_ACTION,
     MISSING_DURATION,
     UNSUPPORTED_DURATION,
+    UNSUPPORTED_TIMING,
 }
 
 sealed interface SessionStartResult {
@@ -62,6 +71,8 @@ object ForegroundSessionCommandParser {
     fun parse(
         action: String?,
         durationName: String?,
+        inhaleDurationMillis: Long? = null,
+        exhaleDurationMillis: Long? = null,
     ): SessionStartResult {
         if (action != ForegroundSessionActions.ACTION_START) {
             return SessionStartResult.Rejected(
@@ -75,13 +86,32 @@ object ForegroundSessionCommandParser {
             )
         }
 
-        val duration = SessionDuration.entries.firstOrNull {
-            it.name == durationName
-        } ?: return SessionStartResult.Rejected(
+        val duration = SessionDuration.fromSerialized(durationName)
+            ?: return SessionStartResult.Rejected(
             SessionStartRejection.UNSUPPORTED_DURATION,
         )
 
-        return SessionStartResult.Accepted(SessionStartRequest(duration))
+        val contract = try {
+            BreathingProtocolContract(
+                inhaleDurationMillis =
+                    inhaleDurationMillis
+                        ?: BreathingProtocolContract.DEFAULT_PHASE_DURATION_MILLIS,
+                exhaleDurationMillis =
+                    exhaleDurationMillis
+                        ?: BreathingProtocolContract.DEFAULT_PHASE_DURATION_MILLIS,
+            )
+        } catch (_: IllegalArgumentException) {
+            return SessionStartResult.Rejected(
+                SessionStartRejection.UNSUPPORTED_TIMING,
+            )
+        }
+
+        return SessionStartResult.Accepted(
+            SessionStartRequest(
+                duration = duration,
+                contract = contract,
+            ),
+        )
     }
 }
 

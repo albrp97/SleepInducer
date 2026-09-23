@@ -18,9 +18,7 @@ class SharedPreferencesSessionStateStore(
             }
             ?: return null
         val duration = preferences.getString(KEY_DURATION, null)
-            ?.let { value ->
-                SessionDuration.entries.firstOrNull { it.name == value }
-            }
+            ?.let(SessionDuration::fromSerialized)
         return StoredSessionState(lifecycle, duration)
     }
 

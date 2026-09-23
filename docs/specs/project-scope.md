@@ -41,11 +41,15 @@ screen, audio, or complex interaction.
 ### Included
 
 - Android application shell and offline operation.
-- Visible setup screen with a small set of supported durations.
-- Default breathing rhythm near six breaths per minute.
+- Visible setup screen with five-, ten-, and twenty-minute presets plus a
+  custom slider from zero to twenty minutes. A custom session starts only when
+  at least one minute is selected.
+- Default breathing rhythm uses six-second inhale and exhale phases, with
+  independently adjustable whole- or half-second timing.
 - No mandatory breath hold in the initial protocol.
 - Gentle phase-transition haptic cues.
 - Screen-off session continuity.
+- System light and dark theme support.
 - Immediate stop, natural completion, and interrupted-session handling.
 - Hardware capability detection and explicit haptic-unavailable messaging.
 - Local-only preferences or operational state when required for reliable
@@ -80,8 +84,10 @@ These are handoff themes, not child records created by bootstrap:
 
 ## Research-informed initial defaults
 
-- Pace: six breaths per minute, approximately one ten-second cycle.
-- Timing: approximately five seconds inhaling and five seconds exhaling.
+- Pace: a slow, comfortable breathing rhythm with six-second inhale and
+  exhale defaults.
+- Timing: each phase can be set independently from two to ten seconds in
+  half-second steps.
 - Holds: none required in the first release.
 - Duration: ten minutes by default, with a twenty-minute preset aligned with
   the direct insomnia breathing study and a shorter option for comfort testing.

@@ -34,11 +34,11 @@ class SessionEngineFlowTest {
         }
 
         engine.start()
-        scheduler.runAt(5_000L)
+        scheduler.runAt(6_000L)
         scheduler.runAt(SessionDuration.SHORT.totalMillis)
 
         assertEquals(
-            SessionState.Active(BreathingPhase.EXHALE, 5_000L),
+            SessionState.Active(BreathingPhase.EXHALE, 6_000L),
             states[1],
         )
         assertEquals(SessionState.Completed, states.last())

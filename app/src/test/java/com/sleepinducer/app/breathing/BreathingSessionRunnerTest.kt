@@ -21,12 +21,12 @@ class BreathingSessionRunnerTest {
             listOf(SessionState.Active(BreathingPhase.INHALE, 0L)),
             states,
         )
-        assertEquals(5_000L, scheduler.schedules.single().targetMillis)
+        assertEquals(6_000L, scheduler.schedules.single().targetMillis)
 
-        scheduler.runLastAt(5_000L)
+        scheduler.runLastAt(6_000L)
 
         assertEquals(
-            SessionState.Active(BreathingPhase.EXHALE, 5_000L),
+            SessionState.Active(BreathingPhase.EXHALE, 6_000L),
             states.last(),
         )
     }
@@ -42,13 +42,13 @@ class BreathingSessionRunnerTest {
         )
 
         runner.start()
-        scheduler.runLastAt(5_250L)
+        scheduler.runLastAt(6_250L)
 
         assertEquals(
-            SessionState.Active(BreathingPhase.EXHALE, 5_250L),
+            SessionState.Active(BreathingPhase.EXHALE, 6_250L),
             states.last(),
         )
-        assertEquals(10_000L, scheduler.schedules.last().targetMillis)
+        assertEquals(12_000L, scheduler.schedules.last().targetMillis)
     }
 
     @Test
@@ -63,7 +63,7 @@ class BreathingSessionRunnerTest {
         stoppedRunner.start()
         val stoppedSchedule = stoppedScheduler.schedules.single()
         stoppedRunner.stop()
-        stoppedScheduler.runAt(stoppedSchedule, 5_000L)
+        stoppedScheduler.runAt(stoppedSchedule, 6_000L)
 
         val interruptedScheduler = FakeSessionScheduler()
         val interruptedStates = mutableListOf<SessionState>()
@@ -75,7 +75,7 @@ class BreathingSessionRunnerTest {
         interruptedRunner.start()
         val interruptedSchedule = interruptedScheduler.schedules.single()
         interruptedRunner.interrupt()
-        interruptedScheduler.runAt(interruptedSchedule, 5_000L)
+        interruptedScheduler.runAt(interruptedSchedule, 6_000L)
 
         assertEquals(
             listOf(
