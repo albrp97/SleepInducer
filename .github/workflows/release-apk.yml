@@ -1,0 +1,47 @@
+name: Publish Android APK Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK components
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build and validate release APK
+        run: ./gradlew test lintDebug assembleRelease --no-daemon
+
+      - name: Prepare release asset
+        run: cp app/build/outputs/apk/release/app-release-unsigned.apk sleep-inducer-release-unsigned.apk
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "Sleep Inducer $GITHUB_REF_NAME" \
+            --generate-notes \
+            --notes "Automated Android release build. This APK is unsigned because release signing is not configured in the repository." \
+            sleep-inducer-release-unsigned.apk
