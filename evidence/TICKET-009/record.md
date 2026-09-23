@@ -484,4 +484,24 @@
   functionality, and APK copy are complete.
 - The optional churn analyzer remains unavailable locally and is recorded as
   `skippedWithReason` in the final static-analysis report.
-- The requested local commit remains the next delivery operation.
+- The local commits and requested repository publication are complete.
+
+## EVID-017 - GitHub publication and README rendering
+
+- **Timestamp:** `2026-09-23T09:27:30Z`
+- **Category:** push
+- **Owner:** agent
+- **Remote:** `git@github-personal:albrp97/SleepInducer.git`
+- **Source branch:** `ticket/safe-session-controls`
+- **Published commits:** `0e6d1ae`, `8469ca7`, and `a75ce33`
+- **Command:** `git push origin ticket/safe-session-controls`
+- **Observed:** push succeeded and `git ls-remote` resolved the branch to
+  `a75ce337dd3ff29f1c5773cb1cd782a838c32c9d`.
+- **README fix:** moved `.github/README.md` to
+  `.github/workflow-overview.md` and updated repository references so GitHub
+  selects the root `README.md`.
+- **README verification:** GitHub's canonical `/readme` endpoint returned
+  `README.md`, and the public repository landing page rendered the Sleep
+  Inducer heading and Android breathing-pacer content without the workflow
+  document.
+- **Status:** passed
