@@ -20,12 +20,12 @@ the timing without audio or continuous visual attention.
 - No account, cloud sync, sleep tracking, or health-data collection.
 
 The app supports five-, ten-, and twenty-minute presets, plus a custom session
-length controlled by a slider from 0 to 20 minutes. A custom session must be
-set to at least one minute before it can start. Choose a duration while the
-screen is visible, allow notifications so the active session remains visible,
-start the session, and then turn the display off. Inhale and exhale begin with
-distinct short cues. The notification and the in-app control both provide a
-stop action.
+length from 0 to 20 minutes. A custom session must be set to at least one
+minute before it can start. Choose a duration while the screen is visible,
+adjust the separate inhale and exhale sliders if needed, allow notifications so
+the active session remains visible, start the session, and then turn the
+display off. Inhale and exhale begin with distinct short cues. The notification
+and the in-app control both provide a stop action.
 
 The app is intended as a wellness and relaxation aid. It is not a medical
 device, a diagnosis, or a treatment for insomnia. Stop if breathing becomes
