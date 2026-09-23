@@ -22,7 +22,7 @@ It is not an implementation plan and does not create child planning records.
 |---|---|---|---|
 | `.github/aidd-config.yml` | Artifact paths, planning policy, commands, gates, and mode profile | Present | Repository inspection |
 | `.github/copilot-instructions.md` | Repository-neutral workflow and delivery rules | Present | Repository inspection |
-| `.github/README.md` | Harmonic Coding workflow overview | Present | Repository inspection |
+| `.github/workflow-overview.md` | Harmonic Coding workflow overview | Present | Repository inspection |
 | `.github/skills/` | Lifecycle, planning, validation, and domain skill contracts | Present | Repository inspection |
 | `.github/prompts/` | Workflow command entry points | Present | Repository inspection |
 | `.github/instructions/` | Planning, implementation, review, security, and testing instructions | Present | Repository inspection |

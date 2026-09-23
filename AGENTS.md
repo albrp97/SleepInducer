@@ -10,7 +10,7 @@ remains in [`.github/copilot-instructions.md`](.github/copilot-instructions.md).
 - Scope handoff: [`docs/specs/project-scope.md`](docs/specs/project-scope.md)
 - Research baseline: [`docs/research/sleep-onset-evidence.md`](docs/research/sleep-onset-evidence.md)
 - Delivery configuration: [`.github/aidd-config.yml`](.github/aidd-config.yml)
-- Workflow overview: [`.github/README.md`](.github/README.md)
+- Workflow overview: [`.github/workflow-overview.md`](.github/workflow-overview.md)
 
 The machine-readable development-mode source is
 `.github/aidd-config.yml:delivery.development.mode`. The selected mode is

@@ -1,4 +1,4 @@
-# Harmonic Coding Repository Workflow
+# Harmonic Coding Workflow Overview
 
 This directory contains Harmonic Coding's repository-native, evidence-first
 workflow for turning an objective into focused implementation tickets.
@@ -9,15 +9,14 @@ a separate framework that adopting repositories need to introduce. Some
 internal filenames retain the `aidd-` prefix for compatibility with existing
 prompts, skills, and evaluations.
 
-For the full Harmonic Coding explanation, read:
+For the full repository workflow, read:
 
-- [`docs/guide/aidd-operating-model.md`](../docs/guide/aidd-operating-model.md)
-  for the runtime contract, modes, evidence, and validation ownership;
-- [`docs/guide/aidd-use-case-workflows.md`](../docs/guide/aidd-use-case-workflows.md)
-  for typical end-to-end workflows;
-- [`docs/guide/aidd-bundle-migration.md`](../docs/guide/aidd-bundle-migration.md)
-  for the integration boundary between the modified workflow and this
-  repository's local extensions.
+- [`copilot-instructions.md`](copilot-instructions.md) for the runtime contract,
+  delivery rules, and validation ownership;
+- [`aidd-config.yml`](aidd-config.yml) for the configured modes, gates, and
+  artifact paths;
+- [`skills/aidd-agent-orchestrator/README.md`](skills/aidd-agent-orchestrator/README.md)
+  for lifecycle orchestration.
 
 ## Planning hierarchy
 
