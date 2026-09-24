@@ -88,5 +88,8 @@ without claiming release readiness that cannot be proven locally.
   launches the APK on API 35, and verifies the pinned signing certificate.
   The signed `v0.1.1` release will be published without moving the existing
   `v0.1.0` tag.
-- The four required GitHub Actions secrets are not yet configured, so the
-  existing public `v0.1.0` asset remains unsigned until `v0.1.1` is published.
+- GitHub Actions successfully built and signature-verified the `v0.1.1` APK
+  using the configured secrets. The first hosted API 35 launch assertion
+  failed after installation. The corrected launch check passed locally; the
+  hosted rerun and release publication remain pending. The existing public
+  `v0.1.0` asset remains unsigned.

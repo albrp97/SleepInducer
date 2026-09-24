@@ -476,3 +476,176 @@ validation classification, and external device/distribution gates
 - **Observed:** clean succeeded, then unit tests, lint, release compilation,
   and signed APK assembly all completed with exit code 0.
 - **Status:** passed after environment correction.
+
+## EVID-018 - Local commit
+
+- **Timestamp:** `2026-09-24`
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Commit:** `dc2a4de14c4a0ec0cdf7bc79d3280c373788053b`
+- **Subject:** `fix(release): sign v0.1.1 APK`
+- **Source branch:** `ticket/safe-session-controls`
+- **Intended base/upstream:** `origin/ticket/safe-session-controls` at
+  `fc4cc43dcc65b13c0ffc400fff547b096a9d4c23`.
+- **Committed paths:** `.github/workflows/release-apk.yml`, `README.md`,
+  `app/build.gradle.kts`,
+  `docs/planning/tickets/open/TICKET-011-device-release-readiness.md`,
+  `evidence/TICKET-011/record.md`,
+  `evidence/static-analysis/baseline.json`,
+  `evidence/static-analysis/TICKET-011-signed-release.md`,
+  `evidence/static-analysis/TICKET-011-signed-release.json`, and
+  `evidence/static-analysis/TICKET-011-signed-release.sarif`.
+- **Readiness references:** EVID-011 through EVID-017; exact-profile review
+  found no introduced defect and passed local APK functionality.
+- **Observed:** local commit created with the configured `albrp97` Git
+  identity. The branch is one commit ahead of its upstream; push and remote
+  workflow checks are pending.
+- **Status:** passed as a local commit only; remote release is not yet
+  delivered.
+
+## EVID-019 - Ticket branch publication
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Remote:** `origin` (`albrp97/SleepInducer`).
+- **Source branch:** `ticket/safe-session-controls`.
+- **Published commit:** `dc2a4de14c4a0ec0cdf7bc79d3280c373788053b`.
+- **Command:** `git push origin ticket/safe-session-controls`.
+- **Observed:** push succeeded without force. GitHub branch ref was verified
+  to resolve to the published commit.
+- **Status:** passed.
+- **PR state:** no PR exists for this branch; repository branch rules reported
+  no required pull-request rules.
+
+## EVID-020 - v0.1.1 release tag publication
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Tag:** annotated `v0.1.1`, targeting
+  `dc2a4de14c4a0ec0cdf7bc79d3280c373788053b`.
+- **Command:** `git tag -a v0.1.1 HEAD -m 'Sleep Inducer v0.1.1'`, then
+  `git push origin refs/tags/v0.1.1`.
+- **Observed:** new tag pushed without moving or rewriting `v0.1.0`; remote
+  tag object `67b60c8f2dc280ddc135aef143758c7793bf840b` was verified.
+- **Status:** passed for tag publication. GitHub Actions run
+  `35977783546` is still in progress; no release asset is claimed yet.
+
+## EVID-021 - Hosted API 35 launch assertion failure
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Requirement:** acceptance criterion 4, install and launch the signed
+  release APK on API 35.
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-api35-install-launch`
+- **System boundary:** GitHub Actions API 35 emulator running the signed
+  `v0.1.1` APK.
+- **Command:** release workflow step ran `adb install -r ...`,
+  `adb shell am start -n com.sleepinducer.app/.MainActivity`, waited three
+  seconds, then ran `adb shell pidof com.sleepinducer.app`.
+- **Expected:** installation succeeds, the activity starts, and the app
+  process remains running.
+- **Observed:** build, signature/package verification, version-tag assertion,
+  and APK installation succeeded. The process check returned exit code 1, so
+  the emulator step failed and release publication was skipped.
+- **Artifact:** GitHub Actions run
+  `https://github.com/albrp97/SleepInducer/actions/runs/35977783546`.
+- **Status:** failed; the current emulator launch assertion does not reliably
+  observe a running app process.
+- **Fix direction:** wait for activity startup and retry the process check,
+  reporting filtered Android runtime/activity errors if the process remains
+  absent. Preserve the API 35 installation and process assertions.
+
+## EVID-022 - Corrected API 35 launch retry test
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Requirement:** acceptance criterion 4, signed release APK install and
+  launch.
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-api35-install-launch`
+- **Automated:** yes
+- **System boundary:** signed local `v0.1.1` APK installed on a clean API 35
+  Google APIs emulator.
+- **Command:** `adb install -r app/build/outputs/apk/release/app-release.apk`,
+  `adb shell am start -W -n com.sleepinducer.app/.MainActivity`, then retry
+  `adb shell pidof com.sleepinducer.app` up to five times with two-second
+  waits.
+- **Assertions:** installation succeeds, activity launch reports
+  `Status: ok`, and the process is found within the retry window.
+- **Expected:** the signed APK installs and its main activity remains
+  running on API 35.
+- **Observed:** install returned `Success`, launch returned `Status: ok`, and
+  the retry check observed a running process.
+- **Status:** passed locally. Hosted workflow confirmation is still required.
+- **Artifacts:** `app/build/outputs/apk/release/app-release.apk`,
+  `/home/ghiki/Downloads/sleep-inducer-release.apk`.
+
+## EVID-023 - Safe same-tag workflow rerun
+
+- **Timestamp:** `2026-09-24`
+- **Category:** qualityGate
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Change:** added manual dispatch with a tag-only job guard. The workflow
+  still checks out `github.ref`, derives `RELEASE_TAG` from that same ref, and
+  asserts APK versionName matches the tag. This permits retrying v0.1.1
+  without moving or rewriting its tag.
+- **Check:** parsed the workflow YAML and ran `bash -n` on all six embedded
+  shell blocks; `git diff --check` passed.
+- **Observed:** the job guard requires `refs/tags/v...`; all syntax checks
+  passed.
+- **Status:** passed locally. Manual hosted rerun remains pending.
+
+## EVID-024 - Automatic validation of corrected launch check
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automaticValidation
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-api35-install-launch`
+- **Automated:** yes
+- **System boundary:** signed local `v0.1.1` APK on a clean API 35 Google APIs
+  emulator.
+- **Executable steps:** install the signed APK, launch the main activity with
+  `adb shell am start -W`, assert `Status: ok`, then retry the process check
+  up to five times with two-second waits.
+- **Assertions:** successful install, successful activity startup, and
+  running app process.
+- **Expected:** the corrected launch check recognizes the app within its
+  retry window.
+- **Observed:** all assertions passed. The exact-profile review classified
+  the local remediation as passed.
+- **Status:** passed for local functionality only.
+- **Limitation:** the hosted v0.1.1 launch check still must pass before a
+  release asset can be published. See EVID-021 for the first hosted failure.
+- **Artifacts:** EVID-022 raw local test result and
+  `app/build/outputs/apk/release/app-release.apk`.
