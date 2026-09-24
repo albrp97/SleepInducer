@@ -106,6 +106,33 @@ The debug build requests vibration, foreground-service, notification, and
 screen-off CPU continuity permissions only. It does not request internet
 access.
 
+## Signed release APKs
+
+GitHub releases publish `sleep-inducer-release.apk` only after the APK passes
+signature verification and installs and launches on an API 35 emulator. Release
+signing uses a dedicated key that must remain outside the repository. Configure
+these GitHub Actions repository secrets before publishing or updating a
+release:
+
+- `ANDROID_KEYSTORE_BASE64`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+
+Add the secrets in
+[repository Actions settings](https://github.com/albrp97/SleepInducer/settings/secrets/actions).
+Keep a secure backup of the release keystore: future APK updates must use the
+same key.
+
+The release build fails rather than producing a downloadable unsigned APK when
+any signing secret is missing. The previously published `v0.1.0` asset is
+unsigned and cannot be installed. To preserve the existing tag, the corrected
+workflow will publish a new signed `v0.1.1` release after the workflow is
+pushed and the secrets are configured. The old `v0.1.0` release remains
+unchanged and should not be installed. CI pins the signing certificate to
+SHA-256
+`f983cd5963b821bff295cb349cc43ef074f3ee76aa467900722f06eabdef5566`.
+
 ## License
 
 Licensing is not selected yet.

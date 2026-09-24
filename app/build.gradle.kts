@@ -1,7 +1,73 @@
+import java.util.Base64
+import org.gradle.api.GradleException
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+}
+
+val releaseSigningSecretNames = listOf(
+    "ANDROID_KEYSTORE_BASE64",
+    "ANDROID_KEYSTORE_PASSWORD",
+    "ANDROID_KEY_ALIAS",
+    "ANDROID_KEY_PASSWORD",
+)
+val releaseSigningValues = releaseSigningSecretNames.associateWith { name ->
+    providers.environmentVariable(name).orNull?.takeIf(String::isNotBlank)
+}
+val releaseSigningConfigured = releaseSigningValues.values.all { it != null }
+val releaseSigningKeyFile = layout.buildDirectory
+    .file("release-signing/sleep-inducer-release.p12")
+    .get()
+    .asFile
+
+if (releaseSigningConfigured) {
+    val encodedKeystore = requireNotNull(
+        releaseSigningValues.getValue("ANDROID_KEYSTORE_BASE64")
+    )
+    val keystoreBytes = try {
+        Base64.getMimeDecoder().decode(encodedKeystore)
+    } catch (error: IllegalArgumentException) {
+        throw GradleException("ANDROID_KEYSTORE_BASE64 is not valid Base64.", error)
+    }
+    if (keystoreBytes.isEmpty()) {
+        throw GradleException("ANDROID_KEYSTORE_BASE64 decoded to an empty keystore.")
+    }
+    val signingDirectory = releaseSigningKeyFile.parentFile
+    if (!signingDirectory.mkdirs() && !signingDirectory.isDirectory) {
+        throw GradleException("Could not create the release signing build directory.")
+    }
+    if (!signingDirectory.setReadable(false, false) ||
+        !signingDirectory.setReadable(true, true) ||
+        !signingDirectory.setWritable(false, false) ||
+        !signingDirectory.setWritable(true, true)
+    ) {
+        throw GradleException("Could not restrict access to the release signing build directory.")
+    }
+    releaseSigningKeyFile.writeBytes(keystoreBytes)
+    if (!releaseSigningKeyFile.setReadable(false, false) ||
+        !releaseSigningKeyFile.setReadable(true, true) ||
+        !releaseSigningKeyFile.setWritable(false, false) ||
+        !releaseSigningKeyFile.setWritable(true, true)
+    ) {
+        releaseSigningKeyFile.delete()
+        throw GradleException("Could not restrict access to the temporary release keystore.")
+    }
+}
+
+val releaseArtifactTasks = setOf("assembleRelease", "bundleRelease", "packageRelease")
+val releaseArtifactRequested = gradle.startParameter.taskNames.any {
+    it.substringAfterLast(':') in releaseArtifactTasks
+}
+if (releaseArtifactRequested && !releaseSigningConfigured) {
+    val missingSecrets = releaseSigningValues
+        .filterValues { it == null }
+        .keys
+        .joinToString()
+    throw GradleException(
+        "Release APKs must be signed. Configure these environment variables: $missingSecrets"
+    )
 }
 
 android {
@@ -12,8 +78,8 @@ android {
         applicationId = "com.sleepinducer.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -36,6 +102,23 @@ android {
 
     testOptions {
         animationsDisabled = true
+    }
+
+    signingConfigs {
+        create("release") {
+            if (releaseSigningConfigured) {
+                storeFile = releaseSigningKeyFile
+                storePassword = releaseSigningValues.getValue("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = releaseSigningValues.getValue("ANDROID_KEY_ALIAS")
+                keyPassword = releaseSigningValues.getValue("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 
     packaging {

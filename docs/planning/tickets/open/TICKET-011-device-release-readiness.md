@@ -12,7 +12,7 @@
 `docs/specs/project-scope.md`, `vision.md`
 **Development mode:** automatic
 **Approval state:** bootstrap-authorized automatic child planning
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-24
 
 ## Outcome
 
@@ -42,6 +42,15 @@ without claiming release readiness that cannot be proven locally.
 3. Physical-device and distribution gates are either evidenced or listed as
    exact blockers.
    - **Acceptance check:** `evidence/TICKET-011/`.
+4. Given a GitHub APK release, it should contain a signed APK that passes
+   signature verification and installs and launches on the supported API 35
+   emulator.
+   - **Functionality test:** the release workflow verifies the signature,
+     installs the release APK, and launches `com.sleepinducer.app`.
+   - **Release check:** `v0.1.1` contains `sleep-inducer-release.apk` with
+     version metadata matching the tag and no unsigned asset. The existing
+     unsigned `v0.1.0` release remains unchanged and is documented as
+     superseded.
 
 ## Protected behaviors
 
@@ -52,8 +61,11 @@ without claiming release readiness that cannot be proven locally.
 ## Verification and evidence
 
 - `./gradlew assembleDebug --offline`
+- `./gradlew test lintDebug assembleRelease --offline` with release-signing
+  environment values configured.
 - `./gradlew connectedDebugAndroidTest --offline`
-- APK install and offline launch smoke.
+- Release APK signature verification, API 35 emulator install, and offline
+  launch smoke.
 - Evidence path: `evidence/TICKET-011/`.
 - Automatic validation uses `rubber-duck` / `gpt-5.6-luna` / high /
   `all-validation`.
@@ -62,5 +74,19 @@ without claiming release readiness that cannot be proven locally.
 
 - The documented APK artifact is reproducible and locally installable.
 - Emulator evidence and screenshots are retained.
+- GitHub's `v0.1.1` release contains the signed `sleep-inducer-release.apk`,
+  and the older unsigned `v0.1.0` release is documented as superseded.
 - Physical-device, signing, provider, and Play policy gaps are explicit
   blockers rather than implied passes.
+
+## Current release-signing status
+
+- A dedicated PKCS#12 release key has been generated and stored outside the
+  repository with owner-only file permissions.
+- The release build requires signing inputs and fails closed when any are
+  missing. The GitHub Actions workflow verifies the signature, installs and
+  launches the APK on API 35, and verifies the pinned signing certificate.
+  The signed `v0.1.1` release will be published without moving the existing
+  `v0.1.0` tag.
+- The four required GitHub Actions secrets are not yet configured, so the
+  existing public `v0.1.0` asset remains unsigned until `v0.1.1` is published.

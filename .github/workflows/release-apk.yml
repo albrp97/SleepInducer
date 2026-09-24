@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  RELEASE_TAG: ${{ github.ref_name }}
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -15,6 +18,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -25,23 +30,69 @@ jobs:
       - name: Install Android SDK components
         run: |
           export PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${PATH}"
-          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --licenses < <(yes)
           sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build and validate release APK
         run: ./gradlew test lintDebug assembleRelease --no-daemon
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Prepare release asset
-        run: cp app/build/outputs/apk/release/app-release-unsigned.apk sleep-inducer-release-unsigned.apk
+        run: cp app/build/outputs/apk/release/app-release.apk sleep-inducer-release.apk
+
+      - name: Verify release signature and package
+        run: |
+          apk="app/build/outputs/apk/release/app-release.apk"
+          apksigner="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          "$apksigner" verify --verbose "$apk"
+          signer_sha256="$("$apksigner" verify --print-certs "$apk" |
+            sed -n 's/^Signer #1 certificate SHA-256 digest: //p' |
+            tr -d ':[:space:]' | tr '[:upper:]' '[:lower:]')"
+          test "$signer_sha256" = "f983cd5963b821bff295cb349cc43ef074f3ee76aa467900722f06eabdef5566"
+          application_id="$("$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest application-id "$apk")"
+          test "$application_id" = "com.sleepinducer.app"
+          version_name="$("$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-name "$apk")"
+          test "$version_name" = "${RELEASE_TAG#v}"
+
+      - name: Install and launch release APK
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          script: |
+            adb install -r app/build/outputs/apk/release/app-release.apk
+            adb shell am start -n com.sleepinducer.app/.MainActivity
+            sleep 3
+            adb shell pidof com.sleepinducer.app
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --verify-tag \
-            --title "Sleep Inducer $GITHUB_REF_NAME" \
-            --generate-notes \
-            --notes "Automated Android release build. This APK is unsigned because release signing is not configured in the repository." \
-            sleep-inducer-release-unsigned.apk
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" sleep-inducer-release.apk \
+              --repo "$GITHUB_REPOSITORY" --clobber
+            assets="$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
+            if printf '%s\n' "$assets" | grep -Fxq "sleep-inducer-release-unsigned.apk"; then
+              gh release delete-asset "$RELEASE_TAG" sleep-inducer-release-unsigned.apk \
+                --repo "$GITHUB_REPOSITORY" --yes
+            fi
+            gh release edit "$RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "Sleep Inducer $RELEASE_TAG" \
+              --notes "Signed Android APK. The release build was signature-verified and installed and launched on an API 35 emulator."
+          else
+            gh release create "$RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --title "Sleep Inducer $RELEASE_TAG" \
+              --generate-notes \
+              --notes "Signed Android APK. The release build was signature-verified and installed and launched on an API 35 emulator." \
+              sleep-inducer-release.apk
+          fi

@@ -1,8 +1,8 @@
 # Evidence Record - TICKET-011
 
 **Repository:** `/home/ghiki/code/sleep-inducer`
-**Branch:** `ticket/android-build-foundation`
-**Base revision:** `ed5255f`
+**Branch:** `ticket/safe-session-controls`
+**Base revision:** `fc4cc43`
 **Phase:** `PHASE-004`
 **Feature:** `FEAT-010`
 **Ticket:** `TICKET-011`
@@ -10,7 +10,8 @@
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
 **Evidence path:** `evidence/TICKET-011/`
-**Readiness:** blocked by external device and delivery gates
+**Readiness:** blocked by GitHub signing-secret setup, required automatic
+validation classification, and external device/distribution gates
 
 ## Planning chain
 
@@ -23,6 +24,8 @@
 2. API 35 emulator display-off behavior is captured with environment details.
 3. Physical-device, signing, provider, remote, and distribution gates are
    evidenced or recorded as exact blockers.
+4. GitHub's `v0.1.0` release contains a signed APK that verifies, installs, and
+   launches on the API 35 emulator; the unsigned asset is removed.
 
 ## EVID-001 - Emulator APK installation and offline launch
 
@@ -190,3 +193,286 @@
 - **Accepted warning:** physical-device screen-off/haptic comfort evidence,
   release signing, provider/remote checks, and Google Play `specialUse`
   approval remain blocked.
+
+## EVID-007 - Reproducing the public release install failure
+
+- **Timestamp:** `2026-09-24`
+- **Category:** baseline
+- **Owner:** agent
+- **Source:** GitHub release `v0.1.0`,
+  `sleep-inducer-release-unsigned.apk`
+- **Command:** download the published APK and run
+  `apksigner verify --verbose`
+- **Expected:** a release APK accepted by Android signature verification.
+- **Observed:** verification failed with `DOES NOT VERIFY` and
+  `Missing META-INF/MANIFEST.MF`; GitHub reported SHA-256
+  `81db3287c9aeea956837193f5d9cf8b1466f844892f02b5ae0e36b9329cce028`.
+- **Status:** failure reproduced
+
+## EVID-008 - Building and installing the signed release APK
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Command:** `./gradlew test lintDebug assembleRelease --offline --no-daemon`
+  with the protected local release-signing environment values.
+- **Signature check:** `apksigner verify --verbose` passed with one RSA signer.
+- **Package assertion:** `com.sleepinducer.app`, min API 26, target API 35.
+- **Functionality command:** `adb install -r
+  app/build/outputs/apk/release/app-release.apk`,
+  `adb shell am start -W -n com.sleepinducer.app/.MainActivity`, and
+  `adb shell pidof com.sleepinducer.app`.
+- **System boundary:** signed APK installed and launched on the API 35
+  `sleep-inducer-api35` emulator.
+- **Expected:** Android accepts the signed package, starts the main activity,
+  and keeps the application process running.
+- **Observed:** Gradle build succeeded; emulator install returned `Success`,
+  launch returned `Status: ok`, and the application process was present.
+- **APK SHA-256:** `b63fb675f46bc4940127beb5f5385c1306fa50dfbbd96cdc5194432f4b9994dc`.
+- **Local artifact:** `/home/ghiki/Downloads/sleep-inducer-release.apk`,
+  verified byte-for-byte against the build output.
+- **Status:** passed for the local signed artifact; the GitHub release has not
+  yet been updated.
+
+## EVID-009 - Rejecting release builds without signing inputs
+
+- **Timestamp:** `2026-09-24`
+- **Category:** regression
+- **Owner:** agent
+- **Command:** `./gradlew assembleRelease --offline --no-daemon` without
+  release-signing environment values.
+- **Expected:** fail before producing an unsigned release APK and name the
+  missing signing inputs.
+- **Observed:** Gradle failed with `Release APKs must be signed` and listed
+  the four required environment-variable names.
+- **Status:** passed; the unsigned-release regression is blocked.
+
+## Current release blockers
+
+- Configure repository Actions secrets
+  `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
+  `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD` from the locally protected
+  signing files in `/home/ghiki/.config/sleep-inducer/release-signing/`.
+- The local tests establish raw results, but the required configured
+  `rubber-duck` / `gpt-5.6-luna` / high / `all-validation` classification has
+  not been run.
+- Physical-device haptic comfort and Google Play `specialUse` approval remain
+  outside this APK installation fix.
+- The current `origin` remote and branch tracking configuration supersede the
+  historical no-remote observation in EVID-003; publication of this release
+  fix is still pending.
+
+## EVID-010 - Local signed release fix and publication gate
+
+- **Timestamp:** `2026-09-24`
+- **Category:** gate
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Required automatic validation profile (not executed):**
+  `rubber-duck` / `gpt-5.6-luna` / high / `all-validation`.
+- **Raw technical commands:** `./gradlew clean --offline --no-daemon`, then
+  `./gradlew test lintDebug assembleRelease --offline --no-daemon` with
+  protected local signing environment values;
+  `apksigner verify --verbose --print-certs`;
+  `apkanalyzer manifest application-id`; API 35 emulator install and activity
+  launch; YAML parse and `bash -n` for workflow scripts.
+- **Raw observed results:** clean Gradle build succeeded, unit tests and lint
+  completed successfully, the APK passed Android signature verification with
+  one RSA signer, package ID is `com.sleepinducer.app`, the API 35 emulator
+  accepted and launched the APK, and workflow YAML and embedded shell syntax
+  checks passed.
+- **Signer certificate SHA-256:** `f983cd5963b821bff295cb349cc43ef074f3ee76aa467900722f06eabdef5566`.
+- **Signed APK SHA-256:** `089fdbdcebaefd6164b2fae17b4b798bd70ed059c075e5b89c8fb6e69812b25c`.
+- **Supersedes:** the earlier APK hash in EVID-008 was produced before the
+  final stable keystore was selected and must not be used. This entry records
+  the final pinned signer and artifact hash.
+- **Local artifact:** `/home/ghiki/Downloads/sleep-inducer-release.apk`.
+- **Expected:** the repository release workflow publishes this stable-key
+  signed APK and removes the old unsigned asset.
+- **Observed:** the release changes remain local and the public `v0.1.0`
+  release is still unsigned because its four Actions secrets have not been
+  configured. The optional churn analyzer is unavailable because
+  `aidd@3.1.0` is not installed; no tooling was installed.
+- **Status:** blocked
+- **Blockers:** GitHub Actions signing secrets are not set, and the required
+  Rubber Duck validation profile has not been invoked. No claim is made that
+  the remote release is fixed yet.
+
+## EVID-011 - Signed v0.1.1 APK install and launch
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Requirement:** acceptance criterion 4, signed release APK install and
+  launch.
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-api35-install-launch`
+- **Automated:** yes
+- **System boundary:** signed release APK installed on the API 35 Google APIs
+  emulator (`sdk_gphone64_x86_64`).
+- **Command:**
+  `adb install -r app/build/outputs/apk/release/app-release.apk`,
+  `adb shell am start -W -n com.sleepinducer.app/.MainActivity`, and
+  `adb shell pidof com.sleepinducer.app`.
+- **Assertions:** Android accepts the APK, the main activity reports
+  `Status: ok`, and the application process remains running.
+- **Expected:** the signed APK installs and launches on API 35.
+- **Observed:** install returned `Success`, launch returned `Status: ok`, and
+  `pidof` returned a running process.
+- **APK metadata:** package `com.sleepinducer.app`, version name `0.1.1`,
+  version code `2`.
+- **Signer certificate SHA-256:**
+  `f983cd5963b821bff295cb349cc43ef074f3ee76aa467900722f06eabdef5566`.
+- **APK SHA-256:**
+  `c3defc2807f58b0c43331d0eca98a503bb27fb5bbb5be56d1c31664f8a95d2fb`.
+- **Artifacts:** `app/build/outputs/apk/release/app-release.apk`,
+  `/home/ghiki/Downloads/sleep-inducer-release.apk`.
+- **Status:** passed for the local signed v0.1.1 APK. This does not establish
+  that the public GitHub release has been updated.
+
+## EVID-012 - Final diff static analysis
+
+- **Timestamp:** `2026-09-24`
+- **Category:** staticAnalysis
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Mode and scope:** diff analysis of release signing, tag-triggered
+  publishing, version `0.1.1`, documentation, and delivery evidence.
+- **Commands:** `git diff --check` and
+  `./gradlew test lintDebug assembleRelease --offline --no-daemon
+  --console=plain`.
+- **Observed:** both commands succeeded. Android Gradle Plugin Lint 8.7.3
+  reported four warnings in unchanged `app/src/main/res/values/strings.xml`.
+  The configured `evidence/static-analysis/baseline.json` records those
+  pre-existing warnings; none is introduced by this diff. The optional
+  `npx --no-install aidd churn --json` check remains unavailable because
+  `aidd@3.1.0` is not installed.
+- **Local-to-PR parity:** `notApplicable`; the repository has no Android
+  pull-request build/test pipeline.
+- **Artifacts:** `evidence/static-analysis/baseline.json`,
+  `evidence/static-analysis/TICKET-011-signed-release.md`,
+  `evidence/static-analysis/TICKET-011-signed-release.json`,
+  `evidence/static-analysis/TICKET-011-signed-release.sarif`, and
+  `app/build/reports/lint-results-debug.xml`.
+- **Status:** `passedWithConcerns`; optional churn coverage is unavailable and
+  the four existing lint warnings remain visible.
+
+## EVID-013 - GitHub release remains blocked
+
+- **Timestamp:** `2026-09-24`
+- **Category:** gate
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Check:** queried the GitHub `v0.1.0` release and release workflow runs.
+- **Expected:** the downloadable release asset is signed and corresponds to
+  the corrected release.
+- **Observed:** the public `v0.1.0` release still contains only
+  `sleep-inducer-release-unsigned.apk` (SHA-256
+  `81db3287c9aeea956837193f5d9cf8b1466f844892f02b5ae0e36b9329cce028`).
+  Signing secrets are not configured, so no signed remote release has run.
+- **Decision:** publish a new `v0.1.1` release rather than moving the existing
+  `v0.1.0` tag; this preserves the configured `allow_force: false` policy.
+- **Status:** blocked.
+- **Blocker:** the four repository Actions signing secrets must be configured
+  before the signed workflow can run. The available GitHub integration has no
+  Actions-secret write operation, so no secret values were transmitted.
+
+## EVID-014 - Superseding the release acceptance target
+
+- **Timestamp:** `2026-09-24`
+- **Category:** gate
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Supersedes:** the initial acceptance coverage at the start of this record
+  that described replacing the v0.1.0 asset.
+- **Current acceptance target:** publish and verify signed `v0.1.1` with APK
+  versionName `0.1.1` and versionCode `2`. Preserve the existing `v0.1.0` tag
+  and its unsigned asset; do not claim it was fixed.
+- **Rationale:** the selected new version avoids force-moving a tag, consistent
+  with the configured `allow_force: false` policy.
+- **Status:** blocked until repository signing secrets are configured and the
+  v0.1.1 workflow completes successfully.
+
+## EVID-015 - Release workflow syntax and version contract
+
+- **Timestamp:** `2026-09-24`
+- **Category:** qualityGate
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Commands:** parsed `.github/workflows/release-apk.yml` with PyYAML 6.0.3
+  and ran `bash -n` on all six embedded shell blocks; checked APK versionName
+  with Android SDK Build Tools 35.0.0 against tag `v0.1.1`.
+- **Expected:** workflow shell syntax is valid and APK versionName matches
+  the version tag.
+- **Observed:** YAML parsed, all six scripts passed `bash -n`, and APK version
+  `0.1.1` matched tag `v0.1.1`.
+- **Status:** passed.
+- **Artifacts:** `.github/workflows/release-apk.yml`,
+  `app/build/outputs/apk/release/app-release.apk`.
+
+## EVID-016 - Automatic validation of local signed APK functionality
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automaticValidation
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-api35-install-launch`
+- **Automated:** yes
+- **System boundary:** local signed v0.1.1 APK on the API 35 Google APIs
+  emulator.
+- **Executable steps:** install
+  `app/build/outputs/apk/release/app-release.apk`, launch
+  `com.sleepinducer.app/.MainActivity` with `adb shell am start -W`, then
+  verify `adb shell pidof com.sleepinducer.app` returns a process.
+- **Assertions:** APK installation succeeds, activity launch reports
+  `Status: ok`, and the app process remains running.
+- **Expected:** Android accepts and launches the signed release APK.
+- **Observed:** all three assertions passed. The final exact-profile review
+  classified this local artifact functionality outcome as passed.
+- **Status:** passed for local signed APK functionality only.
+- **Limitation:** this does not validate or publish a GitHub release.
+  `v0.1.0` remains unsigned and no remote `v0.1.1` release exists. See
+  EVID-013 for the blocked remote gate.
+- **Artifacts:** EVID-011 raw test result,
+  `app/build/outputs/apk/release/app-release.apk`,
+  `/home/ghiki/Downloads/sleep-inducer-release.apk`.
+
+## EVID-017 - Corrected Gradle verification environment
+
+- **Timestamp:** `2026-09-24`
+- **Category:** qualityGate
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Commands:** `./gradlew clean --offline --no-daemon --console=plain`, then
+  `./gradlew test lintDebug assembleRelease --offline --no-daemon
+  --console=plain`, with JDK 17, Android SDK 35, and protected local signing
+  inputs in the process environment.
+- **Initial failure:** the first test/build attempt omitted
+  `ANDROID_HOME`/`ANDROID_SDK_ROOT` and failed with `SDK location not found`.
+- **Fix:** set both SDK environment variables to the installed Android SDK
+  path and rerun the build.
+- **Observed:** clean succeeded, then unit tests, lint, release compilation,
+  and signed APK assembly all completed with exit code 0.
+- **Status:** passed after environment correction.

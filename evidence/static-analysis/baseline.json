@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-24",
+  "source": {
+    "tool": "Android Gradle Plugin Lint",
+    "version": "8.7.3",
+    "report": "app/build/reports/lint-results-debug.xml"
+  },
+  "findings": [
+    {
+      "id": "lint-unused-resources-strings-8",
+      "tool": "Android Gradle Plugin Lint 8.7.3",
+      "category": "lint",
+      "rule": "UnusedResources",
+      "severity": "warning",
+      "confidence": null,
+      "path": "app/src/main/res/values/strings.xml",
+      "startLine": 8,
+      "endLine": 8,
+      "message": "The resource `R.string.setup_next_step_title` appears to be unused",
+      "metric": null,
+      "introduced": false,
+      "baselineStatus": "existing",
+      "remediation": "Keep visible; review outside the release-signing ticket."
+    },
+    {
+      "id": "lint-unused-resources-strings-9",
+      "tool": "Android Gradle Plugin Lint 8.7.3",
+      "category": "lint",
+      "rule": "UnusedResources",
+      "severity": "warning",
+      "confidence": null,
+      "path": "app/src/main/res/values/strings.xml",
+      "startLine": 9,
+      "endLine": 9,
+      "message": "The resource `R.string.setup_next_step_body` appears to be unused",
+      "metric": null,
+      "introduced": false,
+      "baselineStatus": "existing",
+      "remediation": "Keep visible; review outside the release-signing ticket."
+    },
+    {
+      "id": "lint-unused-resources-strings-71",
+      "tool": "Android Gradle Plugin Lint 8.7.3",
+      "category": "lint",
+      "rule": "UnusedResources",
+      "severity": "warning",
+      "confidence": null,
+      "path": "app/src/main/res/values/strings.xml",
+      "startLine": 71,
+      "endLine": 71,
+      "message": "The resource `R.string.service_notification_active` appears to be unused",
+      "metric": null,
+      "introduced": false,
+      "baselineStatus": "existing",
+      "remediation": "Keep visible; review outside the release-signing ticket."
+    },
+    {
+      "id": "lint-typography-ellipsis-strings-38",
+      "tool": "Android Gradle Plugin Lint 8.7.3",
+      "category": "lint",
+      "rule": "TypographyEllipsis",
+      "severity": "warning",
+      "confidence": null,
+      "path": "app/src/main/res/values/strings.xml",
+      "startLine": 38,
+      "endLine": 38,
+      "message": "Replace \"...\" with ellipsis character (…, &#8230;) ?",
+      "metric": null,
+      "introduced": false,
+      "baselineStatus": "existing",
+      "remediation": "Keep visible; review outside the release-signing ticket."
+    }
+  ]
+}
