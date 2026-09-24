@@ -114,8 +114,11 @@ without claiming release readiness that cannot be proven locally.
   The publication step was skipped and no release asset exists. The worktree
   now uses a one-command Bash script for the launch check, and mocked
   regression cases pass. The user approved CHG-003 for signed `v0.1.4` with
-  version code `5`; its version update and corrected hosted validation are
-  pending. Existing tags, including failed v0.1.3, remain unchanged.
+  version code `5`. Hosted run `36039522821` passed build, signature,
+  metadata, and API 35 install/launch checks, then published the single
+  signed APK asset. The downloaded GitHub asset is at
+  `/home/ghiki/Downloads/sleep-inducer-release.apk` and matches the published
+  SHA-256. Existing tags, including failed v0.1.3, remain unchanged.
 
 ## Change control
 
@@ -172,7 +175,8 @@ without claiming release readiness that cannot be proven locally.
 
 ### CHG-003 - Moving the release target to v0.1.4
 
-- **Status:** approved; implementation and hosted validation pending.
+- **Status:** approved; signed v0.1.4 release published and API 35 validation
+  passed.
 - **Approval:** the user selected `authorize-v0.1.4` after hosted run
   `36015108549` failed before app launch and publication.
 - **Previous target:** immutable `v0.1.3`, version name `0.1.3`, version code
@@ -194,4 +198,5 @@ without claiming release readiness that cannot be proven locally.
   passes API 35 install and launch.
 - **Evidence:** EVID-071 records the hosted failure; EVID-072 records the
   corrected launch-script regression checks; EVID-074 records the user's
-  approval of the new immutable release target.
+  approval of the new immutable release target; EVID-076 through EVID-079
+  record the hosted pass, downloaded asset, commit, branch push, and tag.

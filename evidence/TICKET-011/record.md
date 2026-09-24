@@ -10,14 +10,13 @@
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
 **Evidence path:** `evidence/TICKET-011/`
-**Readiness:** Hosted v0.1.3 build, signature checks, and API 35 installation
-passed, but the launch step failed before starting the app because
-`android-emulator-runner@v2` split the multiline script into independent shell
-commands. Publication was skipped and no GitHub release asset exists. The
-launch check now invokes one Bash script command; five mocked success/failure
-cases pass. The user approved CHG-003 for signed v0.1.4/version code 5. The
-version update, commit, tag, corrected hosted API 35 run, and release asset
-remain pending. Physical-device and distribution gates also remain pending.
+**Readiness:** The user-authorized v0.1.4 signed release is published. Hosted
+run `36039522821` passed build, signature, package/version, API 35 install,
+and launch checks; the running process and resumed `MainActivity` were
+observed. The GitHub asset was downloaded and its SHA-256 matches the release
+asset digest. Commit `da1c876` is authored by `albrp97`, pushed to
+`ticket/safe-session-controls`, and tagged `v0.1.4`. Physical-device and
+distribution gates remain pending.
 
 ## Planning chain
 
@@ -1878,6 +1877,96 @@ subsequent changes and resolutions.
   workflow; the immutable failed v0.1.3 tag cannot execute the correction.
 - **Next decision:** approve a new version/tag before another hosted attempt.
 
+## EVID-076 - Hosted v0.1.4 release install and launch
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-launch-api35-v0.1.4`.
+- **Requirement:** acceptance criterion 4; the signed APK must verify, install,
+  launch, and be published only after the API 35 functionality check passes.
+- **Command:** hosted GitHub Actions run `36039522821`, job `107767922615`;
+  build command `./gradlew test lintDebug assembleRelease --no-daemon`;
+  exact workflow step `Install and launch release APK`.
+- **System boundary:** signed v0.1.4 APK, API 35 emulator, Activity Manager,
+  package process, resumed main activity, and GitHub release publication.
+- **Assertions:** signer fingerprint, package name, version name `0.1.4`,
+  version code `5`, successful install, active application process, resumed
+  `com.sleepinducer.app/.MainActivity`, and publication after these checks.
+- **Expected:** the signed APK installs and its main activity becomes
+  resumed; GitHub publishes only the verified APK.
+- **Observed:** build, signature, package/version, and install steps passed.
+  `am start -W` returned exit code `0` with `Status: timeout`, so the script
+  correctly treated the status as inconclusive and verified process PID
+  `2035` plus `topResumedActivity=...com.sleepinducer.app/.MainActivity`.
+  The step passed and GitHub published the release.
+- **Artifacts:** `https://github.com/albrp97/SleepInducer/actions/runs/36039522821`,
+  `https://github.com/albrp97/SleepInducer/releases/tag/v0.1.4`.
+- **Status:** passed.
+
+## EVID-077 - Downloaded and verified the GitHub release APK
+
+- **Timestamp:** `2026-09-24`
+- **Category:** smoke
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Command:** download the v0.1.4 release asset to a temporary Downloads
+  path; compare `sha256sum` with GitHub's asset digest; run `unzip -tq`; move
+  the verified file to
+  `/home/ghiki/Downloads/sleep-inducer-release.apk`.
+- **Expected:** the downloaded APK matches GitHub's uploaded asset and is a
+  readable APK archive.
+- **Observed:** GitHub reports asset size `6,561,012` bytes and digest
+  `sha256:67642061a75e7d47727165049bb680951d18e1ef9a5bb59327440d2dfdead2d5`.
+  The local download matches that digest and archive integrity passed.
+- **Artifacts:** `/home/ghiki/Downloads/sleep-inducer-release.apk`.
+- **Status:** passed.
+
+## EVID-078 - v0.1.4 release commit
+
+- **Timestamp:** `2026-09-24`
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Command:** `git commit -m "fix(release): target v0.1.4 APK"`.
+- **Commit:** `da1c876260217e05e6de11efd12a7100cc86784b`.
+- **Author:** `albrp97`.
+- **Branch:** `ticket/safe-session-controls`.
+- **Paths:** the release workflow, two release launch scripts, app version
+  metadata, README, TICKET-011, and its evidence record.
+- **Observed:** commit created without rewriting history.
+- **Status:** passed.
+
+## EVID-079 - v0.1.4 branch and tag published
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Remote:** `origin` (`github-personal:albrp97/SleepInducer.git`).
+- **Branch:** `ticket/safe-session-controls`.
+- **Commit:** `da1c876260217e05e6de11efd12a7100cc86784b`.
+- **Tag:** annotated `v0.1.4`, target commit
+  `da1c876260217e05e6de11efd12a7100cc86784b`.
+- **Commands:** `git push origin ticket/safe-session-controls`;
+  `git push origin refs/tags/v0.1.4`.
+- **Observed:** both pushes succeeded without force. GitHub Actions run
+  `36039522821` completed successfully and created the v0.1.4 release asset.
+- **Status:** passed.
+
 ## EVID-074 - User approval for v0.1.4
 
 - **Timestamp:** `2026-09-24`
@@ -1895,9 +1984,10 @@ subsequent changes and resolutions.
 - **Scope:** update app version metadata and exact workflow assertion,
   preserve all existing tags, run the corrected signature/install/launch
   workflow, and publish only after all hosted checks pass.
-- **Observed:** approval is explicit; implementation and delivery evidence
-  remain pending.
-- **Status:** approved; this records authorization, not release readiness.
+- **Observed:** approval was recorded before version changes, commit, tag, or
+  publication.
+- **Status:** approved; EVID-076 through EVID-079 record completed release
+  implementation and delivery.
 
 ## EVID-075 - Approved v0.1.4 release contract checks
 
@@ -1924,7 +2014,6 @@ subsequent changes and resolutions.
 - **Expected:** all focused checks pass without changing the previously
   approved tag.
 - **Observed:** regression cases passed, both Bash files parsed, YAML parsed,
-  version metadata matched, and `git diff --check` passed. Local `adb` remains
-  unavailable, so real API 35 functionality is pending the new hosted run.
-- **Status:** passed for focused local checks; hosted build and API 35
-  functionality are still pending.
+  version metadata matched, and `git diff --check` passed. The actual API 35
+  install/launch result is recorded in EVID-076.
+- **Status:** passed for focused local checks.
