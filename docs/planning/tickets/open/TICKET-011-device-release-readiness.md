@@ -47,9 +47,9 @@ without claiming release readiness that cannot be proven locally.
    emulator.
    - **Functionality test:** the release workflow verifies the signature,
      installs the release APK, and launches `com.sleepinducer.app`.
-   - **Release check:** `v0.1.3` contains `sleep-inducer-release.apk` with
-     version name `0.1.3`, version code `4`, and no unsigned asset. Existing
-     `v0.1.0`, `v0.1.1`, and `v0.1.2` tags remain unchanged.
+   - **Release check:** `v0.1.4` contains `sleep-inducer-release.apk` with
+     version name `0.1.4`, version code `5`, and no unsigned asset. Existing
+     `v0.1.0`, `v0.1.1`, `v0.1.2`, and `v0.1.3` tags remain unchanged.
 
 ## Protected behaviors
 
@@ -73,7 +73,7 @@ without claiming release readiness that cannot be proven locally.
 
 - The documented APK artifact is reproducible and locally installable.
 - Emulator evidence and screenshots are retained.
-- GitHub's `v0.1.3` release contains the signed `sleep-inducer-release.apk`,
+- GitHub's `v0.1.4` release contains the signed `sleep-inducer-release.apk`,
   and the older unsigned `v0.1.0` release is documented as superseded.
 - Physical-device, signing, provider, and Play policy gaps are explicit
   blockers rather than implied passes.
@@ -105,8 +105,17 @@ without claiming release readiness that cannot be proven locally.
   The v0.1.3 signed build, package/version/signature checks, 42 API 35
   instrumentation tests, and exact local release-workflow install/launch
   checks passed. The APK is copied to `/home/ghiki/Downloads/`. Its tag,
-  hosted workflow, and GitHub release asset are still pending. Existing tags
-  remain unchanged.
+  hosted workflow, and GitHub release asset are still pending. The first tag
+  push attempt failed because SSH authentication was rejected, but an
+  immediate retry published the annotated tag without force. GitHub confirms
+  `v0.1.3` points to the approved commit. Hosted run `36015108549` built,
+  signature-checked, and installed the APK, but failed before launch because
+  the emulator action executes each line of its multiline script separately.
+  The publication step was skipped and no release asset exists. The worktree
+  now uses a one-command Bash script for the launch check, and mocked
+  regression cases pass. The user approved CHG-003 for signed `v0.1.4` with
+  version code `5`; its version update and corrected hosted validation are
+  pending. Existing tags, including failed v0.1.3, remain unchanged.
 
 ## Change control
 
@@ -160,3 +169,29 @@ without claiming release readiness that cannot be proven locally.
   EVID-045 through EVID-053 record the corrected workflow, exact-profile
   review, commit, and branch push. The user authorized this target after the
   explicit approval request in this session.
+
+### CHG-003 - Moving the release target to v0.1.4
+
+- **Status:** approved; implementation and hosted validation pending.
+- **Approval:** the user selected `authorize-v0.1.4` after hosted run
+  `36015108549` failed before app launch and publication.
+- **Previous target:** immutable `v0.1.3`, version name `0.1.3`, version code
+  `4`; its hosted workflow installed the APK but failed while parsing the
+  multiline emulator script. No GitHub release asset was created.
+- **Approved target:** signed `v0.1.4`, version name `0.1.4`, version code
+  `5`.
+- **Rationale:** the emulator action executes each line of its `script`
+  input separately. The fix moves the launch checks into a Bash file invoked
+  by one command. The immutable v0.1.3 tag cannot include that correction.
+- **Affected artifacts:** `app/build.gradle.kts`,
+  `.github/workflows/release-apk.yml`, `.github/scripts/`,
+  `README.md`, this ticket's release target and status, and appended
+  evidence in `evidence/TICKET-011/record.md`.
+- **Unaffected ancestry and scope:** `OBJ-001`, `SCOPE-001`, `PHASE-004`,
+  `FEAT-010`, breathing behavior, safety boundaries, and ticket status.
+- **Non-goals:** moving or reusing `v0.1.0`, `v0.1.1`, `v0.1.2`, or
+  `v0.1.3`; changing app behavior; publishing before the signed artifact
+  passes API 35 install and launch.
+- **Evidence:** EVID-071 records the hosted failure; EVID-072 records the
+  corrected launch-script regression checks; EVID-074 records the user's
+  approval of the new immutable release target.

@@ -10,9 +10,14 @@
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
 **Evidence path:** `evidence/TICKET-011/`
-**Readiness:** local v0.1.2 build, functionality, and automatic validation
-passed; hosted release verification and external device/distribution gates
-remain pending
+**Readiness:** Hosted v0.1.3 build, signature checks, and API 35 installation
+passed, but the launch step failed before starting the app because
+`android-emulator-runner@v2` split the multiline script into independent shell
+commands. Publication was skipped and no GitHub release asset exists. The
+launch check now invokes one Bash script command; five mocked success/failure
+cases pass. The user approved CHG-003 for signed v0.1.4/version code 5. The
+version update, commit, tag, corrected hosted API 35 run, and release asset
+remain pending. Physical-device and distribution gates also remain pending.
 
 ## Planning chain
 
@@ -25,9 +30,8 @@ remain pending
 2. API 35 emulator display-off behavior is captured with environment details.
 3. Physical-device, signing, provider, remote, and distribution gates are
    evidenced or recorded as exact blockers.
-4. GitHub's `v0.1.2` release contains a signed APK with version name `0.1.2`
-   and version code `3` that verifies, installs, and launches on API 35; the
-   `v0.1.0` and `v0.1.1` tags remain unchanged.
+4. GitHub's approved release target contains a signed APK that verifies,
+   installs, and launches on API 35; existing release tags remain unchanged.
 
 ## EVID-001 - Emulator APK installation and offline launch
 
@@ -1655,3 +1659,272 @@ subsequent changes and resolutions.
 - **Readiness:** passedWithConcerns for the local commit gate only.
 - **Release boundary:** no v0.1.3 tag or GitHub release is claimed. Hosted
   validation and asset publication remain pending.
+
+## EVID-066 - v0.1.3 release-target commit
+
+- **Timestamp:** `2026-09-24`
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Commit:** `63c9f9e789623bd9ba4eee16ac222c8bc422bf6a`.
+- **Subject:** `fix(release): target v0.1.3 APK`.
+- **Author:** `albrp97`.
+- **Source branch:** `ticket/safe-session-controls`.
+- **Intended upstream:** `origin/ticket/safe-session-controls` at
+  `4a0634d17ef671ca2dfd1326380a326e8812ef36`.
+- **Committed paths:** `.github/workflows/release-apk.yml`,
+  `app/build.gradle.kts`, `README.md`,
+  `docs/planning/tickets/open/TICKET-011-device-release-readiness.md`,
+  `evidence/TICKET-011/record.md`, and the v0.1.3 static-analysis
+  `.md`, `.json`, and `.sarif` reports.
+- **Readiness references:** EVID-054 through EVID-065; CHG-002 is approved,
+  local build/signature/version/API 35 functionality passedWithConcerns, and
+  exact-profile automaticValidation and review are terminal.
+- **Observed:** commit created as `albrp97`; branch is one commit ahead of
+  upstream. The APK is not committed. Push is the next configured action.
+- **Status:** passed as a local commit only; no tag or GitHub release is
+  claimed.
+
+## EVID-067 - v0.1.3 release-target commit pushed
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Remote:** `origin` (`github-personal:albrp97/SleepInducer.git`).
+- **Source branch:** `ticket/safe-session-controls`.
+- **Commit:** `63c9f9e789623bd9ba4eee16ac222c8bc422bf6a`.
+- **Command:** `git push origin ticket/safe-session-controls`.
+- **Observed:** push succeeded without force. GitHub's branch commit listing
+  and commit lookup both confirmed that the remote branch head is
+  `63c9f9e789623bd9ba4eee16ac222c8bc422bf6a` and the author is `albrp97`.
+  The local `git ls-remote` read-back returned an SSH public-key permission
+  error; the provider API supplied the independent remote verification.
+- **Tag verification:** GitHub confirms `v0.1.2` still targets
+  `3e5fc8e0b34ee7612f6813bff762c4adda9d2ce3`; `v0.1.3` did not exist before
+  the approved tag operation.
+- **Status:** passed for branch publication and provider-API verification;
+  release-tag publication is next.
+
+## EVID-068 - Initial v0.1.3 tag push authentication blocker
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Tag:** local annotated `v0.1.3` targeting
+  `63c9f9e789623bd9ba4eee16ac222c8bc422bf6a`.
+- **Command:** `git push origin refs/tags/v0.1.3`.
+- **Observed:** push failed with SSH `Permission denied (publickey)`.
+  GitHub's tag lookup still reports no remote `v0.1.3` reference; no remote
+  tag or release was created or moved.
+- **Fix direction:** retry through the configured GitHub SSH identity without
+  exposing credentials; preserve all existing tags.
+- **Status:** blocked pending successful authenticated tag publication.
+
+## EVID-069 - v0.1.3 tag publication authentication blocker
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Local tag:** annotated `v0.1.3` still targets
+  `63c9f9e789623bd9ba4eee16ac222c8bc422bf6a`; it has not been moved.
+- **Recovery attempts:** verified the branch commit through GitHub's API;
+  retried tag authentication with the configured SSH identity; checked for an
+  HTTPS Git credential helper, GitHub CLI, and runtime GitHub token without
+  displaying credential values.
+- **Observed:** SSH still returned `Permission denied (publickey)`. No
+  authenticated HTTPS helper or GitHub CLI is available in this environment.
+  GitHub API lookups return 404 for remote tag `v0.1.3` and its release.
+  Workflow-run listing contains no v0.1.3 run.
+- **Blocker:** the current shell lacks an accepted GitHub write credential
+  for publishing the approved tag.
+- **Fix direction:** restore GitHub write authentication through the normal
+  secure environment, then push the existing local annotated tag. Do not
+  paste private keys or tokens into chat.
+- **Status:** blocked; branch commit and local APK are ready, but the hosted
+  workflow and GitHub release cannot start until tag publication succeeds.
+
+## EVID-070 - v0.1.3 tag published and hosted workflow started
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Tag:** annotated `v0.1.3`, tag object
+  `56d7013af486b1b8b1adac6f34fd8f73765d86c7`, target commit
+  `63c9f9e789623bd9ba4eee16ac222c8bc422bf6a`.
+- **Command:** `git push origin refs/tags/v0.1.3`.
+- **Observed:** a retry succeeded without force. `git ls-remote` and GitHub's
+  tag API confirm the remote annotated tag peels to the approved commit and
+  is tagged by `albrp97`. Existing tags remain unchanged.
+- **Hosted run:** `36015108549`
+  (`https://github.com/albrp97/SleepInducer/actions/runs/36015108549`),
+  triggered by the v0.1.3 tag.
+- **Release status:** the build, signature, metadata, and install steps
+  passed; the launch step failed before the app started because
+  `android-emulator-runner@v2` splits multiline scripts into individual shell
+  commands. Publication was skipped and no GitHub release or APK asset exists.
+- **History:** EVID-068 and EVID-069 retain the initial SSH authentication
+  failures; this entry records the successful retry and supersedes their
+  blocked delivery state.
+- **Status:** passed for remote tag publication; the hosted attempt failed
+  before app launch and publication.
+
+## EVID-071 - Hosted v0.1.3 launch workflow failure
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-launch-api35-v0.1.3`.
+- **Requirement:** acceptance criterion 4; the signed APK must install and
+  launch on the API 35 emulator before publication.
+- **Command:** hosted GitHub Actions run
+  `36015108549`, job `107685496420`, step `Install and launch release APK`.
+- **System boundary:** signed release APK, Android API 35 emulator, Activity
+  Manager, and GitHub release publication gate.
+- **Assertions:** the APK installs, the launch command executes, the package
+  process and resumed main activity are observed, and only then may the
+  workflow publish the release.
+- **Expected:** installation and launch both pass; the workflow publishes
+  `sleep-inducer-release.apk`.
+- **Observed:** build, signer/package/version checks, and `adb install`
+  succeeded. The emulator action passed the launch script one line at a time;
+  `/usr/bin/sh -c if launch_result=...; then` failed with
+  `Syntax error: end of file unexpected (expecting "fi")` before `am start`
+  ran. Launch failed and publication was skipped. The upstream action parser
+  is documented at
+  `https://github.com/ReactiveCircus/android-emulator-runner/blob/v2/lib/script-parser.js`.
+- **Artifacts:** `https://github.com/albrp97/SleepInducer/actions/runs/36015108549`,
+  job `107685496420`.
+- **Status:** failed; no app launch or GitHub release asset was produced.
+- **Fix direction:** run the launch logic from one Bash script command and
+  validate it with a new, explicitly approved release version. Do not move or
+  reuse `v0.1.3`.
+
+## EVID-072 - Release-launch regression and workflow checks
+
+- **Timestamp:** `2026-09-24`
+- **Category:** regression
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Requirement:** acceptance criterion 4; the emulator action must receive a
+  single command, and the launch assertion must retain its success and failure
+  behavior.
+- **Command:** `bash .github/scripts/test-release-apk-install.sh`;
+  `bash -n .github/scripts/verify-release-apk-install.sh`;
+  `bash -n .github/scripts/test-release-apk-install.sh`; parse
+  `.github/workflows/release-apk.yml` with PyYAML 6 and assert the emulator
+  `script` input is exactly
+  `bash .github/scripts/verify-release-apk-install.sh`.
+- **Automated:** true
+- **Assertions:** empty `am start -W` output succeeds only with a process and
+  resumed main activity; `Status: ok` remains accepted; nonzero launch and
+  missing process/activity fail with diagnostics; install failure stops
+  execution before the launch command; the workflow passes one command to the
+  emulator action.
+- **Expected:** all mocked cases and static workflow assertions pass.
+- **Observed:** five mocked success/failure cases passed, both Bash files
+  parsed, YAML parsed, and the workflow script input was exactly one line.
+- **Status:** passed for local mocked regression and syntax checks.
+- **Coverage gap:** no local `adb` or Android SDK is available in this shell,
+  so a real API 35 rerun must occur in the next approved hosted workflow.
+
+## EVID-073 - Local API 35 rerun unavailable
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-launch-api35`.
+- **Command:** `adb devices -l`; inspect the configured SDK paths and run the
+  release-launch script against the API 35 emulator.
+- **System boundary:** signed release APK and API 35 Android emulator.
+- **Assertions:** install succeeds, app process runs, and
+  `com.sleepinducer.app/.MainActivity` is resumed.
+- **Expected:** the corrected script passes on a real local API 35 emulator.
+- **Observed:** `adb` is not installed or on `PATH`, neither
+  `ANDROID_HOME` nor `ANDROID_SDK_ROOT` is configured, and no emulator was
+  available. The hosted v0.1.3 attempt remains a failure because its script
+  syntax prevented app launch.
+- **Status:** blocked.
+- **Blocker:** real API 35 functionality must be rerun by a new hosted
+  workflow; the immutable failed v0.1.3 tag cannot execute the correction.
+- **Next decision:** approve a new version/tag before another hosted attempt.
+
+## EVID-074 - User approval for v0.1.4
+
+- **Timestamp:** `2026-09-24`
+- **Category:** gate
+- **Owner:** user
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Change:** `CHG-003`, moving the immutable release target from failed
+  `v0.1.3` to signed `v0.1.4` / version code `5`.
+- **Approval source:** the user selected `authorize-v0.1.4` in response to
+  the explicit new-tag approval request after hosted run `36015108549` failed
+  before app launch.
+- **Scope:** update app version metadata and exact workflow assertion,
+  preserve all existing tags, run the corrected signature/install/launch
+  workflow, and publish only after all hosted checks pass.
+- **Observed:** approval is explicit; implementation and delivery evidence
+  remain pending.
+- **Status:** approved; this records authorization, not release readiness.
+
+## EVID-075 - Approved v0.1.4 release contract checks
+
+- **Timestamp:** `2026-09-24`
+- **Category:** regression
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Requirement:** CHG-003; the APK and workflow must target version name
+  `0.1.4` and version code `5`, and the emulator action must invoke the
+  corrected launch check as one command.
+- **Command:** `git diff --check`;
+  `bash .github/scripts/test-release-apk-install.sh`;
+  `bash -n .github/scripts/verify-release-apk-install.sh`;
+  `bash -n .github/scripts/test-release-apk-install.sh`; PyYAML 6.0.3
+  parsing and assertions against the release workflow and
+  `app/build.gradle.kts`.
+- **Automated:** true
+- **Assertions:** five mocked install/launch success and failure cases pass;
+  the action script input is one command; Gradle metadata and workflow
+  version-code assertion agree on 0.1.4/code 5.
+- **Expected:** all focused checks pass without changing the previously
+  approved tag.
+- **Observed:** regression cases passed, both Bash files parsed, YAML parsed,
+  version metadata matched, and `git diff --check` passed. Local `adb` remains
+  unavailable, so real API 35 functionality is pending the new hosted run.
+- **Status:** passed for focused local checks; hosted build and API 35
+  functionality are still pending.

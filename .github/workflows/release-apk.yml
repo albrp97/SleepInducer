@@ -60,7 +60,7 @@ jobs:
           version_name="$("$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-name "$apk")"
           test "$version_name" = "${RELEASE_TAG#v}"
           version_code="$("$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-code "$apk")"
-          test "$version_code" = "4"
+          test "$version_code" = "5"
 
       - name: Install and launch release APK
         uses: ReactiveCircus/android-emulator-runner@v2
@@ -69,51 +69,7 @@ jobs:
           arch: x86_64
           profile: pixel_2
           disable-animations: true
-          script: |
-            set -eu
-            adb install -r app/build/outputs/apk/release/app-release.apk
-            if launch_result="$(adb shell am start -W -n com.sleepinducer.app/.MainActivity 2>&1)"; then
-              launch_status=0
-            else
-              launch_status=$?
-            fi
-            printf 'Activity launch exit code: %s\n' "$launch_status"
-            printf '%s\n' "$launch_result"
-            if test "$launch_status" -ne 0; then
-              printf 'Activity launch command failed; collecting diagnostics.\n' >&2
-              adb shell dumpsys activity activities |
-                grep -E 'mResumedActivity|topResumedActivity|mFocusedApp' || true
-              adb logcat -d -t 200 -s AndroidRuntime:E ActivityTaskManager:E ActivityManager:E ||
-                printf 'Could not retrieve logcat diagnostics.\n' >&2
-              exit 1
-            fi
-            if printf '%s\n' "$launch_result" | tr -d '\r' | grep -Fqx 'Status: ok'; then
-              printf 'Activity manager reported Status: ok.\n'
-            else
-              printf 'No Status: ok output; verifying resumed activity and process.\n'
-            fi
-            for attempt in 1 2 3 4 5; do
-              process_id="$(adb shell pidof com.sleepinducer.app | tr -d '\r' || true)"
-              resumed_activity="$(
-                adb shell dumpsys activity activities |
-                  tr -d '\r' |
-                  grep -E 'mResumedActivity|topResumedActivity' |
-                  grep -F 'com.sleepinducer.app/.MainActivity' || true
-              )"
-              if test -n "$process_id" && test -n "$resumed_activity"; then
-                printf 'Running app process: %s\n' "$process_id"
-                printf '%s\n' "$resumed_activity"
-                exit 0
-              fi
-              sleep 2
-            done
-            printf 'App did not become active; collecting diagnostics.\n' >&2
-            adb shell dumpsys activity activities |
-              grep -E 'mResumedActivity|topResumedActivity|mFocusedApp' || true
-            adb shell pidof com.sleepinducer.app || true
-            adb logcat -d -t 200 -s AndroidRuntime:E ActivityTaskManager:E ActivityManager:E ||
-              printf 'Could not retrieve logcat diagnostics.\n' >&2
-            exit 1
+          script: bash .github/scripts/verify-release-apk-install.sh
 
       - name: Publish GitHub release
         env:

@@ -130,13 +130,18 @@ unsigned and cannot be installed. The `v0.1.1` tag remains unchanged after its
 hosted API 35 launch check failed before publication. The `v0.1.2` tag also
 remains unchanged after its hosted API 35 launch check failed, and neither tag
 has a GitHub release asset. The locally validated v0.1.2 APK is not a GitHub
-release download. Change-control record CHG-002 authorizes `v0.1.3` with
-version code `4` as the next signed release target. It is not published yet;
-the tag and asset will be created only after the corrected workflow passes.
-Existing tags must not be moved or reused. GitHub publishes
-`sleep-inducer-release.apk` only after the signed APK passes the API 35 install
-and launch checks. The old `v0.1.0` release remains unchanged and should not
-be installed. CI pins the signing certificate to SHA-256
+release download. Change-control record CHG-002 authorized `v0.1.3`, but
+hosted run `36015108549` failed during API 35 validation: installation
+succeeded, then the emulator action split the multiline script into separate
+shell commands and rejected its `if` statement before the app launch check.
+Release publication was skipped, so no `v0.1.3` GitHub APK asset exists. The
+launch check now runs through one Bash script command, with mocked success
+and failure cases passing. The user has authorized CHG-003, a new signed
+`v0.1.4` release with version code `5`; its corrected build and API 35
+install/launch checks must pass before GitHub publishes
+`sleep-inducer-release.apk`. The `v0.1.3` tag and all older tags remain
+unchanged. The old `v0.1.0` release remains unsigned and should not be
+installed. CI pins the signing certificate to SHA-256
 `f983cd5963b821bff295cb349cc43ef074f3ee76aa467900722f06eabdef5566`.
 
 ## License
