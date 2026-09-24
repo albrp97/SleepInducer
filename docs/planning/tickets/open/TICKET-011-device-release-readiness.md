@@ -47,9 +47,9 @@ without claiming release readiness that cannot be proven locally.
    emulator.
    - **Functionality test:** the release workflow verifies the signature,
      installs the release APK, and launches `com.sleepinducer.app`.
-   - **Release check:** `v0.1.2` contains `sleep-inducer-release.apk` with
-     version name `0.1.2`, version code `3`, and no unsigned asset. Existing
-     `v0.1.0` and `v0.1.1` tags remain unchanged.
+   - **Release check:** `v0.1.3` contains `sleep-inducer-release.apk` with
+     version name `0.1.3`, version code `4`, and no unsigned asset. Existing
+     `v0.1.0`, `v0.1.1`, and `v0.1.2` tags remain unchanged.
 
 ## Protected behaviors
 
@@ -73,7 +73,7 @@ without claiming release readiness that cannot be proven locally.
 
 - The documented APK artifact is reproducible and locally installable.
 - Emulator evidence and screenshots are retained.
-- GitHub's `v0.1.2` release contains the signed `sleep-inducer-release.apk`,
+- GitHub's `v0.1.3` release contains the signed `sleep-inducer-release.apk`,
   and the older unsigned `v0.1.0` release is documented as superseded.
 - Physical-device, signing, provider, and Play policy gaps are explicit
   blockers rather than implied passes.
@@ -90,22 +90,30 @@ without claiming release readiness that cannot be proven locally.
   failed after installation. The corrected launch check passed locally. A
   same-tag workflow dispatch was denied for lack of repository admin rights,
   so the `v0.1.1` tag remains unchanged and was not released. Change-control
-  record `CHG-001` authorizes `v0.1.2` as the next release target. The public
-  `v0.1.0` asset remains unsigned. Local v0.1.2 build, functionality,
+  record `CHG-001` authorized `v0.1.2`, but that immutable tag also failed
+  before publication and has no GitHub release asset. The public `v0.1.0`
+  asset remains unsigned. Local v0.1.2 build, functionality,
   signature, and version checks passed, but tag-triggered hosted run
   `35996308723` failed after installation because `am start -W` returned an
   empty response and the workflow treated the missing `Status: ok` line as
   fatal before checking the process or resumed activity. No v0.1.2 GitHub
   release or APK asset was published. The corrected launch check now passes
-  its mocked failure/success cases and a local API 35 emulator run. The
-  immutable v0.1.2 tag cannot use the corrected workflow; publishing a new
-  version requires explicit authorization. Existing tags remain unchanged.
+  its mocked failure/success cases and a local API 35 emulator run; commit
+  `4a0634d` is pushed to `ticket/safe-session-controls`. The immutable
+  v0.1.2 tag cannot use the corrected workflow. Change-control record
+  `CHG-002` now authorizes v0.1.3/version code 4 as the next release target.
+  The v0.1.3 signed build, package/version/signature checks, 42 API 35
+  instrumentation tests, and exact local release-workflow install/launch
+  checks passed. The APK is copied to `/home/ghiki/Downloads/`. Its tag,
+  hosted workflow, and GitHub release asset are still pending. Existing tags
+  remain unchanged.
 
 ## Change control
 
 ### CHG-001 - Moving the release target to v0.1.2
 
-- **Status:** approved; delivery evidence pending.
+- **Status:** approved; the v0.1.2 target failed before publication and is
+  superseded by CHG-002.
 - **Approval:** the user selected `authorize-v012` after the same-tag dispatch
   was rejected with HTTP 403.
 - **Previous target:** signed `v0.1.1`; its immutable tag points to a commit
@@ -125,3 +133,30 @@ without claiming release readiness that cannot be proven locally.
   claiming a release before the hosted checks pass.
 - **Evidence:** EVID-021 and EVID-027 document the hosted failure and
   dispatch blocker; EVID-028 records this approval.
+
+### CHG-002 - Moving the release target to v0.1.3
+
+- **Status:** approved; delivery evidence pending.
+- **Approval:** the user selected `authorize-v0.1.3` after the hosted
+  v0.1.2 launch check failed and the tag could not be rerun with the corrected
+  workflow.
+- **Previous target:** immutable `v0.1.2`, version name `0.1.2`, version code
+  `3`; hosted run `35996308723` failed before publication and no release
+  asset exists.
+- **Approved target:** signed `v0.1.3`, version name `0.1.3`, version code
+  `4`.
+- **Rationale:** the corrected API 35 launch assertion is committed and
+  pushed as `4a0634d`. Existing tags are immutable and must remain unchanged,
+  so the corrected workflow needs a new version tag.
+- **Affected artifacts:** `app/build.gradle.kts`,
+  `.github/workflows/release-apk.yml` (exact version-code assertion),
+  `README.md`, this ticket's release acceptance and status text, and
+  `evidence/TICKET-011/record.md`.
+- **Unaffected ancestry and scope:** `OBJ-001`, `SCOPE-001`, `PHASE-004`,
+  `FEAT-010`, breathing behavior, safety boundaries, and ticket status.
+- **Non-goals:** moving or reusing `v0.1.0`, `v0.1.1`, or `v0.1.2`; changing
+  app behavior; claiming release publication before all hosted checks pass.
+- **Evidence:** EVID-044 records the immutable v0.1.2 hosted failure;
+  EVID-045 through EVID-053 record the corrected workflow, exact-profile
+  review, commit, and branch push. The user authorized this target after the
+  explicit approval request in this session.

@@ -130,8 +130,10 @@ unsigned and cannot be installed. The `v0.1.1` tag remains unchanged after its
 hosted API 35 launch check failed before publication. The `v0.1.2` tag also
 remains unchanged after its hosted API 35 launch check failed, and neither tag
 has a GitHub release asset. The locally validated v0.1.2 APK is not a GitHub
-release download. A future signed release requires a newly authorized version
-tag; existing tags must not be moved or reused. GitHub publishes
+release download. Change-control record CHG-002 authorizes `v0.1.3` with
+version code `4` as the next signed release target. It is not published yet;
+the tag and asset will be created only after the corrected workflow passes.
+Existing tags must not be moved or reused. GitHub publishes
 `sleep-inducer-release.apk` only after the signed APK passes the API 35 install
 and launch checks. The old `v0.1.0` release remains unchanged and should not
 be installed. CI pins the signing certificate to SHA-256
