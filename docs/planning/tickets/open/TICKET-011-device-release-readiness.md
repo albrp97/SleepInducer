@@ -47,10 +47,9 @@ without claiming release readiness that cannot be proven locally.
    emulator.
    - **Functionality test:** the release workflow verifies the signature,
      installs the release APK, and launches `com.sleepinducer.app`.
-   - **Release check:** `v0.1.1` contains `sleep-inducer-release.apk` with
-     version metadata matching the tag and no unsigned asset. The existing
-     unsigned `v0.1.0` release remains unchanged and is documented as
-     superseded.
+   - **Release check:** `v0.1.2` contains `sleep-inducer-release.apk` with
+     version name `0.1.2`, version code `3`, and no unsigned asset. Existing
+     `v0.1.0` and `v0.1.1` tags remain unchanged.
 
 ## Protected behaviors
 
@@ -74,7 +73,7 @@ without claiming release readiness that cannot be proven locally.
 
 - The documented APK artifact is reproducible and locally installable.
 - Emulator evidence and screenshots are retained.
-- GitHub's `v0.1.1` release contains the signed `sleep-inducer-release.apk`,
+- GitHub's `v0.1.2` release contains the signed `sleep-inducer-release.apk`,
   and the older unsigned `v0.1.0` release is documented as superseded.
 - Physical-device, signing, provider, and Play policy gaps are explicit
   blockers rather than implied passes.
@@ -86,10 +85,37 @@ without claiming release readiness that cannot be proven locally.
 - The release build requires signing inputs and fails closed when any are
   missing. The GitHub Actions workflow verifies the signature, installs and
   launches the APK on API 35, and verifies the pinned signing certificate.
-  The signed `v0.1.1` release will be published without moving the existing
-  `v0.1.0` tag.
 - GitHub Actions successfully built and signature-verified the `v0.1.1` APK
-  using the configured secrets. The first hosted API 35 launch assertion
-  failed after installation. The corrected launch check passed locally; the
-  hosted rerun and release publication remain pending. The existing public
-  `v0.1.0` asset remains unsigned.
+  using the configured secrets, but its first hosted API 35 launch assertion
+  failed after installation. The corrected launch check passed locally. A
+  same-tag workflow dispatch was denied for lack of repository admin rights,
+  so the `v0.1.1` tag remains unchanged and was not released. Change-control
+  record `CHG-001` authorizes `v0.1.2` as the next release target. The public
+  `v0.1.0` asset remains unsigned. Local v0.1.2 build, functionality,
+  signature, and version checks have passed; the tag-triggered hosted workflow
+  and GitHub release asset are still pending.
+
+## Change control
+
+### CHG-001 - Moving the release target to v0.1.2
+
+- **Status:** approved; delivery evidence pending.
+- **Approval:** the user selected `authorize-v012` after the same-tag dispatch
+  was rejected with HTTP 403.
+- **Previous target:** signed `v0.1.1`; its immutable tag points to a commit
+  whose hosted API 35 launch assertion failed.
+- **Approved target:** signed `v0.1.2`, with APK version name `0.1.2` and
+  version code `3`.
+- **Rationale:** retrying `v0.1.1` requires an administrator-authorized
+  workflow dispatch. A new patch tag can run the corrected workflow without
+  moving or rewriting existing tags.
+- **Affected artifacts:** this ticket's release acceptance and status text,
+  `README.md`, `app/build.gradle.kts`,
+  `.github/workflows/release-apk.yml` (including an exact version-code
+  assertion), and appended evidence in `evidence/TICKET-011/record.md`.
+- **Unaffected ancestry and scope:** `OBJ-001`, `SCOPE-001`, `PHASE-004`,
+  `FEAT-010`, breathing behavior, safety boundaries, and ticket status.
+- **Non-goals:** moving `v0.1.0` or `v0.1.1`, changing app behavior, or
+  claiming a release before the hosted checks pass.
+- **Evidence:** EVID-021 and EVID-027 document the hosted failure and
+  dispatch blocker; EVID-028 records this approval.

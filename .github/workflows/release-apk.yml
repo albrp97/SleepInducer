@@ -59,6 +59,8 @@ jobs:
           test "$application_id" = "com.sleepinducer.app"
           version_name="$("$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-name "$apk")"
           test "$version_name" = "${RELEASE_TAG#v}"
+          version_code="$("$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest version-code "$apk")"
+          test "$version_code" = "3"
 
       - name: Install and launch release APK
         uses: ReactiveCircus/android-emulator-runner@v2

@@ -10,8 +10,9 @@
 **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
 `all-validation`
 **Evidence path:** `evidence/TICKET-011/`
-**Readiness:** blocked by GitHub signing-secret setup, required automatic
-validation classification, and external device/distribution gates
+**Readiness:** local v0.1.2 build, functionality, and automatic validation
+passed; hosted release verification and external device/distribution gates
+remain pending
 
 ## Planning chain
 
@@ -24,8 +25,9 @@ validation classification, and external device/distribution gates
 2. API 35 emulator display-off behavior is captured with environment details.
 3. Physical-device, signing, provider, remote, and distribution gates are
    evidenced or recorded as exact blockers.
-4. GitHub's `v0.1.0` release contains a signed APK that verifies, installs, and
-   launches on the API 35 emulator; the unsigned asset is removed.
+4. GitHub's `v0.1.2` release contains a signed APK with version name `0.1.2`
+   and version code `3` that verifies, installs, and launches on API 35; the
+   `v0.1.0` and `v0.1.1` tags remain unchanged.
 
 ## EVID-001 - Emulator APK installation and offline launch
 
@@ -115,7 +117,10 @@ validation classification, and external device/distribution gates
   signing credentials, provider/remote configuration, remote checks, and
   Google Play `specialUse` approval are unavailable.
 
-## Open blockers
+## Baseline blockers recorded in EVID-003
+
+These were observed at evidence initialization; later entries record
+subsequent changes and resolutions.
 
 - Physical-device screen-off timing and haptic comfort.
 - Release signing and production artifact policy.
@@ -649,3 +654,387 @@ validation classification, and external device/distribution gates
   release asset can be published. See EVID-021 for the first hosted failure.
 - **Artifacts:** EVID-022 raw local test result and
   `app/build/outputs/apk/release/app-release.apk`.
+
+## EVID-025 - Emulator launch remediation commit
+
+- **Timestamp:** `2026-09-24`
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Commit:** `56cca0f98d9d043ef35bc2296ccb907b29362ac0`
+- **Subject:** `fix(release): retry emulator launch check`
+- **Source branch:** `ticket/safe-session-controls`
+- **Intended upstream:** `origin/ticket/safe-session-controls` at
+  `dc2a4de14c4a0ec0cdf7bc79d3280c373788053b`.
+- **Committed paths:** `.github/workflows/release-apk.yml`, `README.md`,
+  `docs/planning/tickets/open/TICKET-011-device-release-readiness.md`, and
+  `evidence/TICKET-011/record.md`.
+- **Readiness references:** EVID-021 through EVID-024; hosted failure
+  preserved, corrected local API 35 test passed, and exact-profile review
+  found no blocker in the remediation.
+- **Observed:** local commit created with the configured `albrp97` identity;
+  branch is one commit ahead of its upstream.
+- **Status:** passed as a local fix commit only; hosted rerun remains pending.
+
+## EVID-026 - Emulator launch remediation pushed
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Commit:** `56cca0f98d9d043ef35bc2296ccb907b29362ac0`
+- **Source branch:** `ticket/safe-session-controls`
+- **Remote:** `origin/ticket/safe-session-controls`
+- **Observed:** push succeeded without force; the remote branch now points to
+  the remediation commit.
+- **Status:** passed for branch publication. No hosted release rerun has
+  started.
+
+## EVID-027 - Same-tag hosted rerun blocked by provider permissions
+
+- **Timestamp:** `2026-09-24`
+- **Category:** providerAction
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Requested workflow:** `.github/workflows/release-apk.yml`
+- **Requested ref:** `v0.1.1`
+- **Observed:** GitHub rejected the `workflow_dispatch` API request with
+  `403 Must have admin rights to Repository`; no workflow run was created.
+- **Status:** blocked pending an authorized repository administrator action
+  or approval to publish under a new version tag.
+- **Risk:** the existing `v0.1.1` tag cannot be moved under the configured
+  no-force policy. The ticket still requires a signed APK release and
+  hosted API 35 validation.
+
+## EVID-028 - Approved v0.1.2 release-target change
+
+- **Timestamp:** `2026-09-24`
+- **Category:** planning
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Parent links:** `OBJ-001` / `SCOPE-001` / `PHASE-004` / `FEAT-010`.
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Change ID:** `CHG-001`.
+- **Decision:** change the current signed-release target from `v0.1.1` to
+  `v0.1.2` with APK version name `0.1.2` and version code `3`.
+- **Approval:** user selected `authorize-v012`.
+- **Rationale:** the `v0.1.1` tag is immutable under `allow_force: false`;
+  its hosted API 35 launch check failed, and GitHub rejected the same-tag
+  workflow-dispatch request with HTTP 403.
+- **Impact:** update the active ticket's current release acceptance, README
+  release instructions, Android version metadata, and append-only evidence.
+  No product behavior, parent artifact, ticket status, or scope changes.
+- **Preserved:** the `v0.1.0` and `v0.1.1` tags and their historical evidence.
+- **Status:** approved replanning; local and hosted v0.1.2 verification remain
+  pending.
+
+## EVID-029 - Initial pre-change baseline attempt blocked by shell environment
+
+- **Timestamp:** `2026-09-24`
+- **Category:** baseline
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Command:** `./gradlew test lintDebug --offline --no-daemon`.
+- **Expected:** start Gradle and run the pre-change unit-test and lint
+  baseline.
+- **Observed:** Gradle could not start because this shell did not have
+  `JAVA_HOME` configured and no `java` executable on `PATH`.
+- **Fix:** use the repository environment's JDK 17 at
+  `/home/ghiki/.local/jdks/jdk17` and Android SDK 35 at
+  `/home/ghiki/.local/android-sdk`; no project file was changed for the
+  environment correction.
+- **Status:** blocked for this invocation; the configured-environment retry
+  is recorded in EVID-030.
+
+## EVID-030 - Pre-change Android unit-test and lint baseline
+
+- **Timestamp:** `2026-09-24`
+- **Category:** baseline
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Command:** `./gradlew test lintDebug --offline --no-daemon`, with
+  `JAVA_HOME`, `ANDROID_HOME`, and `ANDROID_SDK_ROOT` set to the repository
+  JDK 17 and Android SDK 35 paths.
+- **Expected:** existing unit-test and lint checks finish successfully before
+  the version metadata change.
+- **Observed:** `BUILD SUCCESSFUL in 4s`; 55 tasks were actionable, one
+  executed and 54 were up-to-date.
+- **Status:** passed as the pre-change raw technical baseline.
+
+## EVID-031 - Building the signed v0.1.2 APK
+
+- **Timestamp:** `2026-09-24`
+- **Category:** qualityGate
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Command:** `./gradlew test lintDebug assembleRelease --offline --no-daemon`
+  with repository JDK 17, Android SDK 35, and protected local signing inputs.
+- **Expected:** unit tests, Android lint, and signed release assembly complete
+  successfully for the approved v0.1.2 metadata.
+- **Observed:** `BUILD SUCCESSFUL in 16s`; 85 tasks were actionable, 26
+  executed and 59 were up-to-date. Lint reported four warnings in the
+  unchanged `strings.xml` baseline.
+- **Failure and fix:** an initial shell invocation exited before Gradle
+  startup while loading protected signing inputs. The retry handled the
+  secret-file EOF safely, checked only that values were present, and printed
+  no secret values.
+- **Status:** passedWithConcerns due only to the four existing lint warnings.
+- **Artifacts:** `app/build/outputs/apk/release/app-release.apk`,
+  `app/build/reports/lint-results-debug.xml`, and
+  `app/build/reports/lint-results-debug.html`.
+
+## EVID-032 - API 35 Android functionality suite
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `ticket-011-api35-android-functionality`.
+- **Command:** `./gradlew connectedDebugAndroidTest --offline --no-daemon`.
+- **System boundary:** Android app and foreground service on a clean API 35
+  Google APIs x86_64 emulator.
+- **Assertions:** all instrumentation flows pass, including setup launch,
+  screen-off phase continuity, configured timing, stop/completion,
+  interruption, and haptic capability behavior.
+- **Expected:** all instrumentation tests pass with no failures or skips.
+- **Observed:** 42 tests completed on API 35; zero failures and zero skips.
+- **Status:** passed.
+- **Artifacts:** `app/build/reports/androidTests/connected/debug/index.html`,
+  `app/build/outputs/androidTest-results/connected/debug/test-result.textproto`.
+
+## EVID-033 - Signed v0.1.2 install and launch
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-api35-install-launch-v0.1.2`.
+- **System boundary:** signed release APK installed on the local API 35
+  `sleep-inducer-api35` emulator.
+- **Steps:** verify package/version metadata and signer; install
+  `app/build/outputs/apk/release/app-release.apk`; start
+  `com.sleepinducer.app/.MainActivity` with `adb shell am start -W`; assert
+  `Status: ok` and a running app process.
+- **Expected:** package `com.sleepinducer.app`, version name `0.1.2`, version
+  code `3`, pinned signer, successful install and activity launch.
+- **Observed:** all assertions passed; API level was `35`, `am start -W`
+  returned `Status: ok`, and the app process was present.
+- **Signer SHA-256:** `f983cd5963b821bff295cb349cc43ef074f3ee76aa467900722f06eabdef5566`.
+- **APK SHA-256:** `06970177d7d62a9839d427115bf6ca1213ece3ffa7da26af1e71a1226d60d627`.
+- **Downloads artifact:** `/home/ghiki/Downloads/sleep-inducer-release.apk`;
+  its SHA-256 matched the release build byte-for-byte.
+- **Failure and fix:** after instrumentation tests, a redundant uninstall
+  returned `DELETE_FAILED_INTERNAL_ERROR`; package inspection showed the test
+  runner had already removed the debug package. Installing the signed APK
+  directly then passed.
+- **Status:** passed for local functionality only; hosted release validation
+  remains pending.
+- **Artifacts:** `app/build/outputs/apk/release/app-release.apk`,
+  `/home/ghiki/Downloads/sleep-inducer-release.apk`.
+
+## EVID-034 - v0.1.2 static analysis and workflow contract
+
+- **Timestamp:** `2026-09-24`
+- **Category:** staticAnalysis
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Checks:** `git diff --check`; Android Gradle build/test/lint; YAML parse
+  and `bash -n` for all six release-workflow scripts; APK package/version
+  contract; and pinned-certificate verification.
+- **Expected:** changed files are clean, workflow syntax is valid, and the
+  signed APK metadata matches `v0.1.2`.
+- **Observed:** diff hygiene passed, YAML parsed, all six scripts passed
+  `bash -n`, APK metadata matched `0.1.2`/`3`, and signature verification
+  passed.
+- **Existing findings:** four Android lint warnings remain in the approved
+  baseline and are not introduced by this diff.
+- **Optional coverage gap:** `npx --no-install aidd churn --json` returned
+  unavailable because `aidd@3.1.0` is not installed. No installation was
+  attempted; churn is optional.
+- **Parity:** no Android build/lint/test PR job is configured. The separate
+  `workflow-evals.yml` job references missing
+  `tools/eval_workflows.py` and `ai-evals/workflow-contracts.json`, and does
+  not validate Android changes. No PR is required for this delivery.
+- **Failure and fix:** the first local tag-contract helper exited before the
+  assertion because its `tag` variable was unset. The corrected helper set
+  `v0.1.2` explicitly and passed the version/tag comparison.
+- **Status:** passedWithConcerns; hosted tag workflow and release asset are
+  separate pending remote gates.
+- **Artifacts:** `evidence/static-analysis/TICKET-011-v0.1.2-release.md`,
+  `evidence/static-analysis/TICKET-011-v0.1.2-release.json`,
+  `evidence/static-analysis/TICKET-011-v0.1.2-release.sarif`,
+  `app/build/reports/lint-results-debug.xml`.
+
+## EVID-035 - Interim exact-profile review
+
+- **Timestamp:** `2026-09-24`
+- **Category:** review
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Review scope:** CHG-001, current diff, local build and functionality
+  results, static analysis, planning links, and remote release gates.
+- **Observed:** the initial review accepted the local technical results with
+  concerns but found the final v0.1.2 evidence and static-analysis artifacts
+  had not yet been appended. EVID-031 through EVID-034 and the v0.1.2
+  analysis artifacts now address that evidence gap. The hosted v0.1.2 workflow
+  and release asset remain pending and are not claimed as passed.
+- **Status:** blocked at the time of this interim review; a final local
+  commit-readiness review is required after evidence reconciliation.
+
+## EVID-036 - Release workflow version-code assertion
+
+- **Timestamp:** `2026-09-24`
+- **Category:** regression
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-workflow-pins-v0.1.2-version-code`.
+- **Red check:** parse `.github/workflows/release-apk.yml` and assert that the
+  signature/package verification step reads `apkanalyzer manifest
+  version-code` and asserts version code `3`.
+- **Expected before fix:** the contract check fails because the release
+  workflow validates only package ID and version name.
+- **Observed before fix:** assertion failed with
+  `release workflow does not verify APK versionCode 3`.
+- **Fix:** the release workflow now extracts APK version code and asserts it
+  is `3`; TICKET-011 change-control scope records the affected workflow.
+- **Post-fix verification:** the focused contract check passed against the
+  workflow and signed APK; YAML parsing and all six embedded Bash syntax
+  checks passed.
+- **Status:** passed.
+
+## EVID-037 - Final local release quality checks
+
+- **Timestamp:** `2026-09-24`
+- **Category:** staticAnalysis
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Checks:** final `git diff --check`; release-workflow YAML parse and
+  `bash -n` for all six shell blocks; assertion that the workflow enforces
+  version code `3`; APK package, version name/code and signature; API 35
+  signed-APK install and launch.
+- **Observed:** all focused checks passed. The signed APK contract is
+  `com.sleepinducer.app`, version name `0.1.2`, version code `3`, with the
+  pinned certificate. API 35 launch returned `Status: ok` and the process
+  remained present.
+- **Existing findings:** four lint warnings remain in the approved baseline.
+- **Optional coverage gap:** churn analysis remains unavailable; no package
+  was installed.
+- **Parity:** no Android build/lint/test PR job is configured. The separate
+  workflow-evaluation workflow does not validate Android changes, and its
+  referenced files are absent. No PR is required for this release.
+- **Status:** passedWithConcerns; hosted workflow and release asset remain
+  separate pending remote gates.
+- **Artifacts:** `evidence/static-analysis/TICKET-011-v0.1.2-release-final.md`,
+  `evidence/static-analysis/TICKET-011-v0.1.2-release-final.json`,
+  `evidence/static-analysis/TICKET-011-v0.1.2-release-final.sarif`,
+  `app/build/reports/lint-results-debug.xml`, and
+  `app/build/reports/androidTests/connected/debug/index.html`.
+
+## EVID-038 - Automatic validation of v0.1.2 release functionality
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automaticValidation
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-api35-install-launch-v0.1.2`.
+- **Automated:** yes.
+- **System boundary:** signed release APK on an API 35 Google APIs x86_64
+  emulator.
+- **Assertions:** package, version name `0.1.2`, version code `3`, pinned
+  signer, successful installation, `Status: ok` from activity startup, and a
+  running app process.
+- **Expected:** the supported emulator accepts and launches the signed
+  v0.1.2 package with metadata matching the approved release target.
+- **Observed:** all local assertions passed; the exact-profile validator
+  returned terminal `PASS`.
+- **Status:** passed for local release functionality only.
+- **Artifacts:** `app/build/outputs/apk/release/app-release.apk`,
+  `/home/ghiki/Downloads/sleep-inducer-release.apk`,
+  `app/build/reports/androidTests/connected/debug/index.html`.
+- **Boundary:** the hosted v0.1.2 workflow and GitHub release asset are not
+  covered by this result and remain pending remote verification.
+
+## EVID-039 - Current v0.1.2 readiness snapshot
+
+- **Timestamp:** `2026-09-24`
+- **Category:** gate
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Local terminal evidence:** EVID-031 through EVID-038; build, API 35
+  functionality, APK metadata/signature, workflow version-code enforcement,
+  and automatic validation passed, with four accepted existing lint warnings
+  and optional churn unavailable.
+- **Approval:** CHG-001 authorizes the new v0.1.2 target; v0.1.0 and v0.1.1
+  tags remain unchanged.
+- **Current blockers:** the v0.1.2 change is staged but not yet committed or
+  tagged; no hosted v0.1.2 workflow run or GitHub release asset exists yet.
+  Physical-device haptic comfort and Google Play `specialUse` approval also
+  remain external gates.
+- **Resolved since baseline:** remote origin and upstream are configured,
+  signing inputs are available, and local automatic validation is terminal.
+- **Status:** local commit gate may proceed after final staged review; remote
+  delivery and ticket completion remain blocked until the authorized tag
+  workflow and release asset are verified.
+
+## EVID-040 - Final staged v0.1.2 review
+
+- **Timestamp:** `2026-09-24`
+- **Category:** review
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Reviewed scope:** 11 staged paths covering release metadata, the
+  version-code workflow assertion, README/ticket updates, and initial/final
+  v0.1.2 static-analysis and delivery evidence.
+- **Observed:** the staged diff passed `git diff --cached --check`; planning
+  ancestry and CHG-001 approval are consistent; EVID-038 provides terminal
+  local automatic validation; no introduced blocking finding remains.
+- **Accepted concerns:** four existing Android lint warnings and unavailable
+  optional churn analysis.
+- **Remote boundary:** no hosted v0.1.2 workflow run or GitHub release asset
+  exists yet. Physical-device and Google Play `specialUse` gates remain
+  external. These block delivery completion and ticket closure, not the
+  local commit.
+- **Status:** passedWithConcerns for the local commit gate only.
