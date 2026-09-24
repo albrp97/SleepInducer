@@ -127,8 +127,11 @@ same key.
 The release build fails rather than producing a downloadable unsigned APK when
 any signing secret is missing. The previously published `v0.1.0` asset is
 unsigned and cannot be installed. The `v0.1.1` tag remains unchanged after its
-hosted API 35 launch check failed before publication. The next signed release
-uses tag `v0.1.2`, preserving both existing tags. GitHub publishes
+hosted API 35 launch check failed before publication. The `v0.1.2` tag also
+remains unchanged after its hosted API 35 launch check failed, and neither tag
+has a GitHub release asset. The locally validated v0.1.2 APK is not a GitHub
+release download. A future signed release requires a newly authorized version
+tag; existing tags must not be moved or reused. GitHub publishes
 `sleep-inducer-release.apk` only after the signed APK passes the API 35 install
 and launch checks. The old `v0.1.0` release remains unchanged and should not
 be installed. CI pins the signing certificate to SHA-256

@@ -1,0 +1,121 @@
+{
+  "runId": "TICKET-011-v0.1.2-launch-workflow-fix-2026-09-24",
+  "mode": "diff",
+  "scope": "Corrected API 35 release launch validation and accurate release-status documentation; no Android application source or version metadata changed.",
+  "validationProfile": {
+    "validator": "rubber-duck",
+    "model": "gpt-5.6-luna",
+    "reasoningEffort": "high",
+    "scope": "all-validation"
+  },
+  "profileAvailability": "available",
+  "tools": [
+    {
+      "category": "formattingHygiene",
+      "tool": "Git",
+      "version": "2.55.0",
+      "command": "git diff --check",
+      "configuration": "Repository worktree diff",
+      "scope": "Final changed paths",
+      "exitCode": 0,
+      "status": "passed",
+      "reportPath": null,
+      "findings": [],
+      "availability": "available"
+    },
+    {
+      "category": "workflowSyntaxAndRegression",
+      "tool": "PyYAML and GNU Bash",
+      "version": "PyYAML 6.0.3; Bash 5.3.15",
+      "command": "Parse .github/workflows/release-apk.yml; run the extracted install/launch script through mock-adb success and failure cases; run bash -n on all embedded blocks",
+      "configuration": ".github/workflows/release-apk.yml",
+      "scope": "Workflow YAML, all six embedded Bash blocks, and launch-result contract",
+      "exitCode": 0,
+      "status": "passed",
+      "reportPath": null,
+      "findings": [],
+      "availability": "available",
+      "observed": [
+        "Empty am start output with a running package process and resumed main activity passed.",
+        "Status: ok with a running package process and resumed main activity passed.",
+        "Missing process/activity failed and emitted diagnostics.",
+        "Nonzero am start failed and emitted diagnostics."
+      ]
+    },
+    {
+      "category": "androidFunctionality",
+      "tool": "Android Emulator",
+      "version": "Emulator 37.1.11.0; Android API 35",
+      "command": "Execute the exact extracted Install and launch release APK script against app/build/outputs/apk/release/app-release.apk",
+      "configuration": "Temporary API 35 x86_64 emulator; local signed v0.1.2 release APK",
+      "scope": "APK installation, MainActivity launch, package process, and resumed activity",
+      "exitCode": 0,
+      "status": "passed",
+      "reportPath": null,
+      "findings": [],
+      "availability": "available",
+      "observed": [
+        "APK install returned Success.",
+        "am start -W returned Status: ok.",
+        "The package process was present and topResumedActivity identified com.sleepinducer.app/.MainActivity."
+      ]
+    },
+    {
+      "category": "workflowStaticAnalyzers",
+      "tool": "actionlint, ShellCheck, and yamllint",
+      "version": null,
+      "command": "Check configured analyzer availability without installing tools",
+      "configuration": ".github/aidd-config.yml; no repository-specific YAML/shell analyzer command is configured",
+      "scope": "Changed GitHub Actions YAML and embedded shell",
+      "exitCode": null,
+      "status": "skippedWithReason",
+      "reportPath": null,
+      "findings": [],
+      "availability": "unavailable",
+      "reason": "All three optional analyzers are unavailable. PyYAML parsing, bash -n, mock contract checks, and the API 35 emulator run provide the available verification."
+    },
+    {
+      "category": "churn",
+      "tool": "aidd CLI",
+      "version": null,
+      "command": "Check optional aidd CLI availability",
+      "configuration": ".github/aidd-config.yml: delivery.gates.churn=optional",
+      "scope": "Changed paths",
+      "exitCode": null,
+      "status": "skippedWithReason",
+      "reportPath": null,
+      "findings": [],
+      "availability": "unavailable",
+      "reason": "The aidd CLI is not installed; no installation was attempted because churn is optional."
+    },
+    {
+      "category": "pullRequestWorkflowEvaluation",
+      "tool": "Workflow Evals",
+      "version": null,
+      "command": "python tools/eval_workflows.py --spec ai-evals/workflow-contracts.json --threshold 1.0",
+      "configuration": ".github/workflows/workflow-evals.yml",
+      "scope": "PR workflow evaluation",
+      "exitCode": null,
+      "status": "skippedWithReason",
+      "reportPath": null,
+      "findings": [],
+      "availability": "unavailable",
+      "reason": "The configured evaluator tools/eval_workflows.py and contract ai-evals/workflow-contracts.json are absent from the worktree."
+    }
+  ],
+  "parity": "notApplicable",
+  "findings": [],
+  "artifacts": [
+    "evidence/static-analysis/TICKET-011-v0.1.2-launch-workflow-fix-final.md",
+    "evidence/static-analysis/TICKET-011-v0.1.2-launch-workflow-fix-final.json",
+    "evidence/static-analysis/TICKET-011-v0.1.2-launch-workflow-fix-final.sarif"
+  ],
+  "blockers": [],
+  "acceptedWarnings": [
+    "No PR static-analysis job is configured; static-analysis parity is notApplicable. The separate PR workflow-evals job cannot run because its referenced evaluator and contract files are absent.",
+    "Optional actionlint, ShellCheck, yamllint, and aidd churn analyzers are unavailable and were not installed.",
+    "Four existing Android lint warnings in unchanged app/src/main/res/values/strings.xml remain as recorded by EVID-031 through EVID-040."
+  ],
+  "deliveryStatus": "The immutable v0.1.2 tag's hosted run failed and no GitHub release asset exists. This local analysis does not pass hosted release gates; a new version tag requires explicit authorization.",
+  "status": "passedWithConcerns"
+}

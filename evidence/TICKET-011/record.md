@@ -1038,3 +1038,298 @@ subsequent changes and resolutions.
   external. These block delivery completion and ticket closure, not the
   local commit.
 - **Status:** passedWithConcerns for the local commit gate only.
+
+## EVID-041 - Local v0.1.2 release commit
+
+- **Timestamp:** `2026-09-24`
+- **Category:** commit
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Commit:** `3e5fc8e0b34ee7612f6813bff762c4adda9d2ce3`.
+- **Subject:** `fix(release): validate v0.1.2 APK`.
+- **Source branch:** `ticket/safe-session-controls`.
+- **Intended upstream:** `origin/ticket/safe-session-controls` at
+  `56cca0f98d9d043ef35bc2296ccb907b29362ac0`.
+- **Committed paths:** `.github/workflows/release-apk.yml`, `README.md`,
+  `app/build.gradle.kts`,
+  `docs/planning/tickets/open/TICKET-011-device-release-readiness.md`,
+  `evidence/TICKET-011/record.md`, and six v0.1.2 static-analysis report
+  artifacts.
+- **Readiness references:** EVID-031 through EVID-040; exact-profile local
+  automatic validation passed, static analysis passedWithConcerns, and no
+  introduced blocking review finding remains.
+- **Accepted warnings:** four existing lint warnings; optional churn analysis
+  unavailable.
+- **Observed:** commit created with author `albrp97`; local branch is one
+  commit ahead of upstream. Hosted release verification remains pending.
+- **Status:** passed as a local commit only; no delivery-complete claim.
+
+## EVID-042 - v0.1.2 release commit pushed
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Source branch:** `ticket/safe-session-controls`.
+- **Remote:** `origin/ticket/safe-session-controls`.
+- **Commit:** `3e5fc8e0b34ee7612f6813bff762c4adda9d2ce3`.
+- **Command:** `git push origin ticket/safe-session-controls`.
+- **Observed:** push succeeded without force; a corrected `git ls-remote`
+  check confirmed the remote branch points to the commit. The first combined
+  push/check shell invocation had a quoting typo after the push; the separate
+  remote verification passed.
+- **Status:** passed for branch publication. The v0.1.2 release tag and
+  hosted workflow remain pending.
+
+## EVID-043 - v0.1.2 release tag published
+
+- **Timestamp:** `2026-09-24`
+- **Category:** push
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Tag:** annotated `v0.1.2`.
+- **Target commit:** `3e5fc8e0b34ee7612f6813bff762c4adda9d2ce3`.
+- **Command:** `git push origin refs/tags/v0.1.2`.
+- **Observed:** tag push succeeded without force; remote peeled tag resolves
+  to the intended commit. Tag-triggered workflow run `35996308723` started
+  and is in progress.
+- **Status:** passed for tag publication; hosted build, install/launch, and
+  release asset remain pending.
+
+## EVID-044 - Hosted v0.1.2 launch assertion failure
+
+- **Timestamp:** `2026-09-24`
+- **Category:** deployment
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Workflow run:** `35996308723`
+  (`https://github.com/albrp97/SleepInducer/actions/runs/35996308723`).
+- **Ref/commit:** immutable tag `v0.1.2` at
+  `3e5fc8e0b34ee7612f6813bff762c4adda9d2ce3`.
+- **Expected:** hosted build, signature/version checks, API 35 install and
+  launch, then signed release publication.
+- **Observed:** build/test/lint and signature/package/version checks passed.
+  The hosted emulator booted on API 35 and APK install returned `Success`.
+  `adb shell am start -W` returned exit code `0` but empty output. The strict
+  `grep -Fx 'Status: ok'` then exited `1`, terminating the script before its
+  process-retry loop or diagnostic logcat. The workflow job failed and the
+  release publication step was skipped.
+- **What remains unknown:** because the script exited before checking
+  `pidof`, resumed activity, or logcat, this run does not establish whether
+  the app process or main activity actually started.
+- **Status:** failed; no GitHub `v0.1.2` release or APK asset was created.
+- **Fix direction:** treat absent `Status: ok` text as inconclusive, then
+  require an independently observed running process and resumed main
+  activity; emit logcat and activity diagnostics when those assertions fail.
+- **Tag policy:** preserve the failed `v0.1.2` tag. A future version-tag
+  publication requires explicit authorization and must use the corrected
+  workflow.
+
+## EVID-045 - Corrected release launch contract checks
+
+- **Timestamp:** `2026-09-24`
+- **Category:** contract
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Requirement:** TICKET-011 acceptance criterion 4; a release APK must
+  install and launch on API 35 before publication.
+- **Command:** parsed `.github/workflows/release-apk.yml` with PyYAML 6.0.3,
+  extracted the `Install and launch release APK` shell script, and executed
+  it through an inline Python harness with mocked `adb` and `sleep`.
+- **Assertions:** empty `am start -W` output is inconclusive when both the
+  package process and resumed main activity are present; `Status: ok` also
+  passes with those observations; a missing process/activity and a nonzero
+  launch command fail and emit diagnostics. All six embedded workflow Bash
+  blocks pass `bash -n`.
+- **Expected:** tolerate missing status text only when independent activity
+  and process checks prove the app is active; reject failed launches with
+  diagnostics.
+- **Observed:** both healthy cases passed. Both negative cases failed with
+  the expected diagnostic output. YAML parsing and all six shell syntax
+  checks passed; `git diff --check` passed.
+- **Baseline:** EVID-044 records the hosted false negative caused by making
+  `Status: ok` mandatory before the process/activity checks.
+- **Artifacts:** `evidence/static-analysis/TICKET-011-v0.1.2-launch-workflow-fix-final.md`,
+  `.json`, and `.sarif`.
+- **Status:** passed for the corrected workflow contract; optional analyzer
+  availability is recorded separately in EVID-047.
+
+## EVID-046 - Local API 35 release launch verification
+
+- **Timestamp:** `2026-09-24`
+- **Category:** deployment
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Requirement:** TICKET-011 acceptance criterion 4; verify the release
+  install-and-launch gate against the supported Android boundary.
+- **Command:** execute the exact `Install and launch release APK` script
+  extracted from `.github/workflows/release-apk.yml` against the locally
+  signed v0.1.2 release APK on an API 35 emulator (emulator 37.1.11.0).
+- **Expected:** APK installs, the launch command succeeds, the app process
+  exists, and `.MainActivity` is the resumed activity.
+- **Observed:** install returned `Success`; `am start -W` reported
+  `Status: ok`; the process was observed and `topResumedActivity` identified
+  `com.sleepinducer.app/.MainActivity`.
+- **Boundary:** local API 35 emulator only. This does not claim the failed
+  immutable v0.1.2 tag passed hosted CI or has a GitHub release asset.
+- **Cleanup:** stopped the emulator and ADB daemon and removed only the
+  temporary `sleep-inducer-api35` AVD created for this check.
+- **Artifacts:** local release APK at
+  `app/build/outputs/apk/release/app-release.apk`; workflow analysis reports
+  are recorded with EVID-047.
+- **Status:** passed for the local API 35 launch flow; hosted publication
+  remains blocked on a newly authorized version tag.
+
+## EVID-047 - Initial exact-profile review evidence blocker
+
+- **Timestamp:** `2026-09-24`
+- **Category:** review
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Scope:** workflow/docs correction only; no app source or version change.
+- **Expected:** final workflow correction and supporting analysis evidence
+  should be internally auditable before commit readiness is classified.
+- **Observed:** the reviewer found no launch-logic defect and confirmed the
+  configured validator profile was available. It blocked commit readiness
+  because the final static-analysis Markdown/JSON/SARIF artifacts and terminal
+  automatic-validation record had not yet been written.
+- **Fix:** created the three configured static-analysis reports and added
+  EVID-048 and EVID-049; a follow-up exact-profile validation will verify
+  those artifacts and classify the terminal automatic-validation gate.
+- **Status:** blocked at this review snapshot; superseded by the follow-up
+  validation after the evidence artifacts are verified.
+
+## EVID-048 - Final launch-workflow static analysis
+
+- **Timestamp:** `2026-09-24`
+- **Category:** staticAnalysis
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Run:** `TICKET-011-v0.1.2-launch-workflow-fix-2026-09-24`, diff mode.
+- **Command and results:** `git diff --check` passed; PyYAML 6.0.3 parsed the
+  workflow; GNU Bash 5.3.15 passed `bash -n` on all six embedded blocks; the
+  mocked launch contract and real API 35 script execution passed as recorded
+  in EVID-045 and EVID-046.
+- **Findings:** none introduced.
+- **Parity:** `notApplicable`; no PR static-analysis job is configured.
+- **Availability gaps:** optional actionlint, ShellCheck, yamllint, and aidd
+  churn analyzers are unavailable. The separate PR workflow-evaluation job
+  references missing `tools/eval_workflows.py` and
+  `ai-evals/workflow-contracts.json`; it was not represented as passing.
+- **Artifacts:** `evidence/static-analysis/TICKET-011-v0.1.2-launch-workflow-fix-final.md`,
+  `.json`, and `.sarif`.
+- **Status:** passedWithConcerns; coverage limitations are explicit and no
+  introduced finding remains.
+
+## EVID-049 - Automated API 35 release launch functionality
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automatedFunctionality
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-launch-api35`.
+- **Command:** parse `.github/workflows/release-apk.yml`, extract the exact
+  `Install and launch release APK` script, then execute it against
+  `app/build/outputs/apk/release/app-release.apk` on a local API 35 emulator.
+- **System boundary:** signed APK install, Android Activity Manager launch,
+  package process lookup, and resumed main-activity inspection on API 35.
+- **Assertions:** install succeeds; a nonzero launch command fails;
+  `Status: ok` is optional; success requires both the package process and
+  resumed `com.sleepinducer.app/.MainActivity`.
+- **Expected:** the corrected release launch gate passes when the app is
+  active and emits diagnostics when launch or activity assertions fail.
+- **Observed:** APK installation and launch passed. The package process was
+  present and `topResumedActivity` identified the main activity. Mocked
+  negative cases also failed with diagnostics as required.
+- **External effects:** no GitHub release was created; the test used only a
+  temporary local emulator, which was stopped and removed afterward.
+- **Artifacts:** EVID-045, EVID-046, and the EVID-048 static-analysis reports.
+- **Status:** passed for the local API 35 functionality boundary; hosted
+  release publication remains a separate blocker.
+
+## EVID-050 - Automatic validation of corrected release launch flow
+
+- **Timestamp:** `2026-09-24`
+- **Category:** automaticValidation
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Test ID:** `release-apk-launch-api35`.
+- **Requirement:** TICKET-011 acceptance criterion 4; the release workflow
+  must distinguish missing launch-command output from a failed app launch
+  and must prove the APK is active before publication.
+- **Command:** inspect the deterministic YAML, Bash syntax, mocked launch
+  contract, and local API 35 emulator results in EVID-045, EVID-046,
+  EVID-048, and EVID-049 with the exact configured Rubber Duck profile.
+- **System boundary:** API 35 APK installation, Activity Manager launch,
+  package-process detection, and resumed main-activity verification.
+- **Assertions:** empty output with an active process and resumed activity
+  passes; missing status alone does not pass; missing process/activity and
+  nonzero launch fail with diagnostics.
+- **Expected:** successful local functionality evidence for the corrected
+  launch gate, with hosted release status kept separate.
+- **Observed:** the exact extracted script installed and launched the signed
+  v0.1.2 APK locally and observed the main activity. Mocked negative paths
+  failed as required. The reviewer classified local functionality as PASS
+  and the overall review as `passedWithConcerns`.
+- **Concerns:** optional workflow analyzers and churn are unavailable; the
+  PR evaluator/spec are absent; four existing Android lint warnings remain;
+  hosted publication has not passed.
+- **Artifacts:** `evidence/static-analysis/TICKET-011-v0.1.2-launch-workflow-fix-final.md`,
+  `.json`, and `.sarif`.
+- **Status:** passedWithConcerns for the local functionality boundary only.
+  No hosted-release or user-validation claim is made.
+
+## EVID-051 - Final local workflow-fix review
+
+- **Timestamp:** `2026-09-24`
+- **Category:** review
+- **Owner:** agent
+- **Planning layer:** ticket
+- **Parent artifact:** `TICKET-011`
+- **Validation profile:** `rubber-duck` / `gpt-5.6-luna` / high /
+  `all-validation`.
+- **Scope:** corrected API 35 release launch workflow, current README/ticket
+  status, and final evidence artifacts.
+- **Observed:** the exact-profile reviewer verified that EVID-045 through
+  EVID-049 and all referenced analysis reports are present and consistent.
+  It found no blocking defect in the workflow/docs correction and confirmed
+  the earlier EVID-047 evidence gap is closed.
+- **Accepted concerns:** unavailable optional analyzers/churn, missing
+  workflow-evaluation source/spec, and four existing Android lint warnings.
+- **Readiness:** ready for a local commit of the reviewed workflow/docs fix
+  only. This is not ticket completion or release readiness.
+- **Release blocker:** immutable tag `v0.1.2` failed before publication and
+  has no GitHub release asset. A new version tag requires explicit user
+  authorization and must pass hosted checks.
+- **Status:** passedWithConcerns for the local commit gate; hosted delivery
+  remains blocked.

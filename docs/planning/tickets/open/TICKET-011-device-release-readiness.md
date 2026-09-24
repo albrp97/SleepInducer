@@ -92,8 +92,14 @@ without claiming release readiness that cannot be proven locally.
   so the `v0.1.1` tag remains unchanged and was not released. Change-control
   record `CHG-001` authorizes `v0.1.2` as the next release target. The public
   `v0.1.0` asset remains unsigned. Local v0.1.2 build, functionality,
-  signature, and version checks have passed; the tag-triggered hosted workflow
-  and GitHub release asset are still pending.
+  signature, and version checks passed, but tag-triggered hosted run
+  `35996308723` failed after installation because `am start -W` returned an
+  empty response and the workflow treated the missing `Status: ok` line as
+  fatal before checking the process or resumed activity. No v0.1.2 GitHub
+  release or APK asset was published. The corrected launch check now passes
+  its mocked failure/success cases and a local API 35 emulator run. The
+  immutable v0.1.2 tag cannot use the corrected workflow; publishing a new
+  version requires explicit authorization. Existing tags remain unchanged.
 
 ## Change control
 
